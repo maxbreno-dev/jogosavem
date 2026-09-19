@@ -510,26 +510,25 @@ async function buildAndSavePdf(){
   });
 
   footer();
-  const blob=doc.output("blob");
-  const safeCase=(S.case.name||"caso").replace(/[^a-z0-9]/gi,"_");
-  const safeName=(st.name||"aluno").replace(/[^a-z0-9]/gi,"_");
-  const filename=`relatorio_savem_${safeName}_${safeCase}.pdf`;
+  const filename=`relatorio_savem_${(st.name||"aluno").replace(/[^a-z0-9]/gi,"_")}_${(S.case.name||"caso").replace(/[^a-z0-9]/gi,"_")}.pdf`;
 
-  if(!window.claude||!window.claude.use){
-    alert("O download não está disponível nesta visualização. Abra a simulação publicada (fora do modo de edição) para gerar o PDF.");
-    return;
+  // Dentro do artefato Claude, a capability "downloads" é o único caminho que funciona
+  // (o iframe bloqueia downloads via link/script). Fora do Claude (site publicado à
+  // parte, ex.: GitHub Pages), esse recurso não existe — nesse caso o próprio jsPDF
+  // consegue disparar o download normal do navegador.
+  if(window.claude&&window.claude.use){
+    const downloads=await window.claude.use("downloads");
+    if(downloads){
+      try{
+        await downloads.save({filename,data:doc.output("blob")});
+        return;
+      }catch(err){
+        if(err&&err.code==="declined")return;
+        // se a capability falhar por outro motivo, cai no caminho padrão abaixo
+      }
+    }
   }
-  const downloads=await window.claude.use("downloads");
-  if(!downloads){
-    alert("O download não está disponível nesta visualização. Abra a simulação publicada (fora do modo de edição) para gerar o PDF.");
-    return;
-  }
-  try{
-    await downloads.save({filename,data:blob});
-  }catch(err){
-    if(err&&err.code==="declined")return;
-    throw err;
-  }
+  doc.save(filename);
 }
 function buildDebriefing(){
   const stab=Math.round(S.stabilityScore==null?100:S.stabilityScore);
