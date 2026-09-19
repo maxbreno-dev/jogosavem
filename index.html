@@ -1,0 +1,1514 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>JOGO SAVeM — CleverMed</title>
+<style>
+:root{--bg:#050b0d;--panel:#0b1518;--line:#1c3439;--text:#eaf7f8;--muted:#8fa9ae;--green:#52ff8f;--cyan:#53d8ff;--yellow:#ffe66d;--red:#ff5263;--orange:#ff9d4d}
+/* O monitor multiparamétrico mantém a mesma paleta escura independente do tema
+   do sistema — é a cor de um monitor hospitalar real, não uma preferência de UI. */
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#050b0d;--panel:#0b1518;--line:#1c3439;--text:#eaf7f8;--muted:#8fa9ae}}
+:root[data-theme="dark"]{--bg:#050b0d;--panel:#0b1518;--line:#1c3439;--text:#eaf7f8;--muted:#8fa9ae}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);background-image:radial-gradient(circle at top,#102126 0,#050b0d 45%);color:var(--text);font-family:Inter,system-ui,Arial,sans-serif}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+@media (prefers-reduced-motion: reduce){.warning{animation:none}}
+button,select{font:inherit}.app{max-width:1450px;margin:auto;padding:18px}.brand{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.logo{font-weight:900;letter-spacing:.12em;font-size:24px}.logo b{color:var(--green)}.badge{border:1px solid var(--line);background:#091316;padding:7px 10px;border-radius:999px;color:var(--muted);font-size:12px}
+.card{background:linear-gradient(180deg,#0c171a,#081113);border:1px solid var(--line);border-radius:18px;box-shadow:0 16px 50px #0007}
+.setup{max-width:850px;margin:8vh auto;padding:26px}.setup h1{font-size:42px;margin:0 0 8px}.setup p{color:var(--muted);line-height:1.55}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}.field label{display:block;color:var(--muted);font-size:13px;margin-bottom:7px}.field select,.field input{width:100%;background:#071013;color:white;border:1px solid #294249;border-radius:12px;padding:13px;font:inherit;box-sizing:border-box}
+.case{margin-top:18px;padding:16px;background:#071013;border-radius:14px;border:1px solid #183038}.case h3{margin:0 0 8px}.case p{margin:0;color:#bed0d3}
+.vitals-preview{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.chip{padding:6px 9px;border:1px solid #294249;border-radius:999px;color:#cbe2e5;font-size:12px}
+.primary{background:var(--green);color:#031009;border:0;border-radius:12px;padding:14px 18px;font-weight:900;cursor:pointer}.primary:disabled{opacity:.35;cursor:not-allowed}
+.game{display:none;position:relative}.topbar{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;margin-bottom:12px}.topinfo{color:var(--muted);font-size:13px}
+.timer{font-size:34px;font-variant-numeric:tabular-nums;font-weight:900;padding:8px 16px;border-radius:14px;background:#071013;border:1px solid #294249}
+.quit{background:transparent;color:#c6d7da;border:1px solid #294249;border-radius:10px;padding:10px 12px;cursor:pointer}
+.layout{display:flex;flex-direction:column;gap:14px}
+.monitor{padding:14px;min-height:540px;background:#020607;border-color:#263b40;position:relative;overflow:hidden}
+.monitor:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(#ffffff05 1px,transparent 1px);background-size:100% 4px;opacity:.25}
+.monitor-head{display:flex;justify-content:space-between;color:#7e999f;font-size:12px;letter-spacing:.08em}
+.score-badge{padding:2px 10px;border-radius:20px;font-weight:700;letter-spacing:normal;font-size:11px}
+.score-badge.good{background:#0e2e1c;color:#6fe3a0;border:1px solid #1e5c3a}
+.score-badge.ok{background:#2a2a0e;color:#e3d36f;border:1px solid #5c5c1e}
+.score-badge.warn{background:#3a2a10;color:#ffb35c;border:1px solid #6b4a1e}
+.score-badge.bad{background:#3a1016;color:#ff8a95;border:1px solid #6b1e28}
+.score-badge-lg{padding:10px 22px;border-radius:12px;font-weight:900;font-size:20px;letter-spacing:.03em;transition:transform .15s}
+.score-badge-lg.good{background:#0e2e1c;color:#6fe3a0;border:2px solid #2f8a58}
+.score-badge-lg.ok{background:#2a2a0e;color:#e3d36f;border:2px solid #8a7c2f}
+.score-badge-lg.warn{background:#3a2a10;color:#ffb35c;border:2px solid #a06a24}
+.score-badge-lg.bad{background:#3a1016;color:#ff8a95;border:2px solid #a02f3d}
+.score-badge-lg.flash{transform:scale(1.12)}
+@media(max-width:950px){.score-badge-lg{font-size:15px;padding:7px 14px}}
+.vitalrow{display:grid;grid-template-columns:150px 1fr 150px;align-items:center;min-height:92px;border-bottom:1px solid #102024}
+.vital-label{font-size:13px;color:#8ba5aa}.wave{height:65px;width:100%}.value{text-align:right;font-size:52px;font-weight:800;font-variant-numeric:tabular-nums}.unit{font-size:11px;color:#7d989e}
+.green{color:var(--green)}.cyan{color:var(--cyan)}.yellow{color:var(--yellow)}.red{color:var(--red)}
+.side{display:flex;flex-direction:column;gap:14px}.casebox,.tools,.log{padding:16px}.casebox h3,.tools h3,.log h3{margin:0 0 10px}.casebox p{font-size:13px;line-height:1.45;color:#b7c9cc;margin:0}
+@media(min-width:951px){.side{display:grid;grid-template-columns:minmax(260px,1fr) minmax(0,1.7fr);grid-template-rows:auto 1fr;gap:14px}.casebox{grid-column:1;grid-row:1}.log{grid-column:1;grid-row:2}.tools{grid-column:2;grid-row:1/3}}
+.toolcat{margin-top:14px}.toolcat h4{margin:0 0 7px;color:#8fa9ae;font-size:11px;letter-spacing:.09em;text-transform:uppercase}
+.toolgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.tool{background:#0c1c20;color:#dcebed;border:1px solid #244048;border-radius:10px;padding:9px;text-align:left;font-size:12px;cursor:pointer;transition:.15s}
+.tool:hover{border-color:#4b7d88;transform:translateY(-1px)}.tool.active{background:#153329;border-color:var(--green);color:#dffff0}.tool.bnm.active{background:#35161a;border-color:var(--red)}
+.log{max-height:235px;overflow:auto}.event{display:grid;grid-template-columns:55px 1fr;gap:8px;padding:7px 0;border-bottom:1px solid #14262a;font-size:12px}.event time{color:var(--cyan)}
+.warning{position:absolute;left:20px;right:20px;top:18px;text-align:center;background:#5d171dcc;border:1px solid var(--red);padding:10px;border-radius:10px;font-weight:800;animation:pulse 1s infinite;z-index:3}
+@keyframes pulse{50%{opacity:.55}}.hidden{display:none!important}
+.modal{position:fixed;inset:0;background:#000b;display:flex;align-items:center;justify-content:center;padding:20px;z-index:20}.modalbox{width:min(650px,100%);max-height:90vh;overflow-y:auto;padding:25px}.modalbox h2{font-size:36px;margin:0 0 8px}.resultgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0}.result{background:#071013;border:1px solid #1e373d;border-radius:12px;padding:10px}.result span{display:block;color:#8fa9ae;font-size:11px}.result b{font-size:20px}.actions{display:flex;gap:8px;flex-wrap:wrap}.secondary{background:#102126;color:#e7f3f4;border:1px solid #2b474e;border-radius:12px;padding:13px 16px;font-weight:800;cursor:pointer}
+footer{text-align:center;color:#637b80;font-size:11px;padding:18px}
+@media(max-width:950px){.monitor{min-height:auto}.grid2{grid-template-columns:1fr}.vitalrow{grid-template-columns:95px 1fr 105px}.value{font-size:38px}.wave{height:55px}.topbar{grid-template-columns:1fr auto}.quit{grid-column:1/-1}.toolgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.setup{margin:4vh auto;padding:18px}.setup h1{font-size:30px}.vitalrow{grid-template-columns:72px 1fr 88px;min-height:74px}.value{font-size:28px}.unit{font-size:9px}.wave{height:44px}.toolgrid{grid-template-columns:1fr}.timer{font-size:24px;padding:6px 10px}.resultgrid{grid-template-columns:1fr 1fr}}
+
+.airway-banner{margin:10px 0 0;padding:10px 12px;border:1px solid #31525a;border-radius:12px;background:#0a171a;color:#bfe8ee;font-size:12px}
+.airway-feedback{margin-top:10px;padding:10px;border-radius:10px;background:#071013;border:1px solid #203a40;font-size:12px;color:#c9dde0}
+.airway-feedback.bad{border-color:#71313a;color:#ffc3ca}.airway-feedback.good{border-color:#28724b;color:#bfffd5}
+.howto{max-width:520px}.howto ol{padding-left:20px;line-height:1.7;color:#c6d7da}.linklike{background:none;border:none;color:var(--cyan);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+
+.vent-waves{display:flex;flex-direction:column;gap:6px;margin-top:14px;border-top:1px solid var(--line);padding-top:10px}
+.ventwave-row{display:grid;grid-template-columns:110px 1fr 70px;align-items:center;gap:8px;font-size:11px;color:var(--muted)}
+.ventwave{width:100%;height:44px;background:#040a0c;border-radius:6px}
+.ventwave-row b{color:var(--text);font-size:15px;text-align:right}
+.vent-alarms{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.vent-alarm{padding:4px 10px;border-radius:20px;font-size:11px;border:1px solid var(--line);color:var(--muted)}
+.vent-alarm.on{background:#3a1016;border-color:var(--red);color:#ffc3ca;animation:pulse 1s infinite}
+.vent-params .field{margin-bottom:8px}
+.vent-params input[type=range]{width:100%}
+.vent-params .field label{display:flex;justify-content:space-between}
+#phase3 select{width:100%;background:#0a1219;color:var(--text);border:1px solid var(--line);border-radius:6px;padding:6px}
+.vent-readouts{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--muted)}
+.vent-readouts b{color:var(--text);font-size:14px;margin-left:4px}
+.mech h4,.gaso h4{margin:0 0 8px;font-size:13px;color:var(--muted)}
+.mech .hint,.gaso .hint,.vent-params .hint{font-size:11px;color:#5c7278;font-weight:400}
+.vent-params .hint{margin:4px 0 0}
+.debriefing{margin:14px 0;padding:12px 14px;background:#0a1219;border:1px solid var(--line);border-radius:10px;text-align:left;font-size:13px;line-height:1.6}
+.debriefing h4{margin:0 0 6px;font-size:13px;color:var(--text)}
+.debriefing p{margin:0 0 10px;color:#c6d7da}
+.debriefing ul{margin:0 0 10px;padding-left:18px}
+.debriefing li{margin-bottom:4px}
+.debriefing .good-item{color:#6fe3a0}
+.debriefing .bad-item{color:#ff8a95}
+.print-only{display:none}
+@media print{
+  body>*:not(#printReport){display:none!important}
+  #printReport{display:block!important;color:#000;background:#fff;font-family:Arial,Helvetica,sans-serif;padding:20px}
+  #printReport h1{font-size:20px;margin:0 0 4px}
+  #printReport h2{font-size:15px;margin:18px 0 6px;border-bottom:1px solid #999;padding-bottom:4px}
+  #printReport table{width:100%;border-collapse:collapse;margin-bottom:10px}
+  #printReport td{padding:3px 6px;border-bottom:1px solid #ddd;font-size:12px}
+  #printReport ul{margin:0 0 10px;padding-left:18px;font-size:12px}
+  #printReport .bad{color:#a00}
+  #printReport .good{color:#060}
+  #printReport .meta{color:#555;font-size:12px;margin-bottom:14px}
+}
+.toast-host{position:absolute;top:70px;left:50%;transform:translateX(-50%);z-index:40;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:90%;max-width:560px}
+.toast{background:#3a1016;border:2px solid var(--red);color:#ffd7db;padding:12px 18px;border-radius:10px;font-weight:700;font-size:14px;text-align:center;box-shadow:0 6px 20px rgba(0,0,0,.4);animation:toastIn .2s ease-out}
+@keyframes toastIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.toast.fadeout{animation:toastOut .4s ease-in forwards}
+@keyframes toastOut{to{opacity:0;transform:translateY(-10px)}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="brand"><div class="logo">JOGO <b>SAVeM</b></div><div class="badge">CleverMed • Simulador educacional</div></div>
+
+  <section id="setup" class="setup card">
+    <h1>Você tem 2 minutos.</h1>
+    <p>Escolha seu nível e um caso clínico. Durante a simulação, aplique as ferramentas e acompanhe a resposta do paciente no monitor.</p>
+    <div class="grid2">
+      <div class="field"><label>Nome do aluno</label><input type="text" id="studentName" placeholder="Seu nome"></div>
+      <div class="field"><label>Data da turma SAVeM</label><input type="date" id="studentDate"></div>
+    </div>
+    <div class="field"><label>Cidade</label><input type="text" id="studentCity" placeholder="Cidade onde a turma acontece"></div>
+    <div class="grid2">
+      <div class="field"><label>Nível do jogador</label><select id="level"></select></div>
+      <div class="field"><label>Caso clínico</label><select id="caseSelect"></select></div>
+    </div>
+    <div id="casePreview" class="case"></div>
+    <div style="margin-top:18px;display:flex;justify-content:space-between;align-items:center">
+      <button id="howtoBtn" class="linklike">Como jogar</button>
+      <button id="start" class="primary">INICIAR SIMULAÇÃO</button>
+    </div>
+  </section>
+
+  <section id="game" class="game">
+    <div id="toastHost" class="toast-host"></div>
+    <div class="topbar">
+      <div><div id="gameTitle" style="font-weight:900;font-size:18px"></div><div id="gameMeta" class="topinfo"></div></div>
+      <div id="scoreBadge" class="score-badge-lg good">SCORE 100%</div>
+      <div id="timer" class="timer">02:00</div>
+      <button id="quit" class="quit">Encerrar</button>
+    </div>
+    <div class="layout">
+      <div id="monitor" class="monitor card">
+        <div id="warning" class="warning hidden">⚠ SATURAÇÃO PRÓXIMA AO LIMITE DE PCR</div>
+        <div class="monitor-head"><span>MONITOR MULTIPARAMÉTRICO</span><span id="monitorState">EM SIMULAÇÃO</span></div>
+        <div class="vitalrow"><div><div class="vital-label">FC</div><div class="unit">bpm</div></div><canvas class="wave" data-wave="ecg"></canvas><div id="hr" class="value green">--</div></div>
+        <div class="vitalrow"><div><div class="vital-label">SpO₂</div><div class="unit">%</div></div><canvas class="wave" data-wave="spo2"></canvas><div id="spo2" class="value cyan">--</div></div>
+        <div class="vitalrow"><div><div class="vital-label">PA</div><div class="unit">mmHg</div></div><canvas class="wave" data-wave="pa"></canvas><div id="bp" class="value yellow" style="font-size:40px">--/--</div></div>
+        <div class="vitalrow"><div><div class="vital-label">PAM</div><div class="unit">mmHg</div></div><canvas class="wave" data-wave="pam"></canvas><div id="map" class="value yellow">--</div></div>
+        <div class="vitalrow"><div><div class="vital-label">FR</div><div class="unit">irpm</div></div><canvas class="wave" data-wave="rr"></canvas><div id="rr" class="value green">--</div></div>
+      </div>
+      <aside class="side">
+        <div class="casebox card"><h3 id="sideCase"></h3><p id="sideDesc"></p><div id="stateChips" class="vitals-preview"></div></div>
+        <div class="tools card"><h3>Sedação e pré-oxigenação</h3><div id="toolPanel"></div>
+<div class="airway-banner"><b>FASE 2 — MANEJO DA VIA AÉREA</b><br>O monitor e o cronômetro continuam ativos durante as tentativas. Cada paciente tem fatores ocultos (anatomia, sedação, trauma) que só são revelados quando você tenta uma técnica.</div>
+<div id="airwayPanel"></div><div id="airwayFeedback" class="airway-feedback">Selecione uma ferramenta de manejo da via aérea.</div></div>
+        <div class="log card"><h3>Linha do tempo</h3><div id="eventLog"></div></div>
+      </aside>
+    </div>
+  </section>
+
+  <section id="phase3" class="game" style="display:none">
+    <div class="topbar">
+      <div><div style="font-weight:900;font-size:18px">FASE 3 — VENTILAÇÃO MECÂNICA</div><div id="v3Meta" class="topinfo"></div></div>
+      <div id="v3ScoreBadge" class="score-badge-lg good">SCORE 100%</div>
+      <div id="v3Timer" class="timer">00:00</div>
+      <button id="v3Quit" class="quit">Encerrar</button>
+    </div>
+    <div class="layout">
+      <div id="v3Monitor" class="monitor card">
+        <div id="v3Warning" class="warning hidden">⚠ SATURAÇÃO PRÓXIMA AO LIMITE DE PCR</div>
+        <div class="monitor-head"><span>MONITOR + VENTILADOR</span><span id="v3State">CONFIGURANDO</span></div>
+        <div class="vitalrow"><div><div class="vital-label">FC</div><div class="unit">bpm</div></div><canvas class="wave" data-wave="ecg"></canvas><div id="v3hr" class="value green">--</div></div>
+        <div class="vitalrow"><div><div class="vital-label">SpO₂</div><div class="unit">%</div></div><canvas class="wave" data-wave="spo2"></canvas><div id="v3spo2" class="value cyan">--</div></div>
+        <div class="vitalrow"><div><div class="vital-label">PA</div><div class="unit">mmHg</div></div><canvas class="wave" data-wave="pa"></canvas><div id="v3bp" class="value yellow" style="font-size:40px">--/--</div></div>
+        <div class="vent-waves">
+          <div class="ventwave-row"><span>Volume (mL)</span><canvas class="ventwave" data-vwave="vol"></canvas><b id="v3vol">--</b></div>
+          <div class="ventwave-row"><span>Fluxo (L/min)</span><canvas class="ventwave" data-vwave="flux"></canvas><b id="v3flux">--</b></div>
+          <div class="ventwave-row"><span>Pressão (cmH₂O)</span><canvas class="ventwave" data-vwave="press"></canvas><b id="v3press">--</b></div>
+        </div>
+        <div id="v3Readouts" class="vent-readouts"></div>
+        <div id="v3Alarms" class="vent-alarms"></div>
+        <div class="mech card" style="margin-top:10px">
+          <h4>Mecânica respiratória calculada <span class="hint">(a partir das curvas — o preset real do paciente não é revelado)</span></h4>
+          <div id="v3Mech" class="vitals-preview"></div>
+        </div>
+        <div class="gaso card" style="margin-top:10px">
+          <h4>Gasometria arterial</h4>
+          <div id="v3Gaso" class="vitals-preview"><span class="chip">Ainda não colhida</span></div>
+          <button id="v3DrawABG" class="secondary" style="margin-top:8px;width:auto">🩸 COLHER GASOMETRIA</button>
+        </div>
+      </div>
+      <aside class="side">
+        <div class="casebox card"><h3 id="v3Case"></h3><p id="v3Desc"></p><div id="v3PatientInfo" class="vitals-preview"></div></div>
+        <div class="tools card">
+          <h3>Parâmetros do ventilador</h3>
+          <div class="field"><label>Modo</label>
+            <select id="v3Mode"><option value="VCV">VCV — Volume Controlado</option><option value="PCV">PCV — Pressão Controlada</option><option value="PSV">PSV/CPAP — Pressão de Suporte</option></select>
+          </div>
+          <div id="v3ParamsVCV" class="vent-params">
+            <div class="field"><label>Volume corrente (mL)</label><input type="range" id="v3Volume" min="100" max="900" step="10" value="400"><span data-out="v3Volume">400</span></div>
+            <div class="field"><label>Frequência (irpm)</label><input type="range" id="v3Frequencia" min="6" max="40" step="1" value="14"><span data-out="v3Frequencia">14</span></div>
+            <div class="field"><label>Fluxo inspiratório (L/min)</label><input type="range" id="v3Fluxo" min="20" max="80" step="1" value="40"><span data-out="v3Fluxo">40</span></div>
+            <div class="field"><label>Formato da onda de fluxo</label>
+              <select id="v3FlowForm"><option value="1">Quadrada (constante)</option><option value="0.5">Decelerante intermediária</option><option value="0">Decelerante (rampa)</option></select>
+            </div>
+            <div class="field"><label>Pausa inspiratória (s)</label><input type="range" id="v3PausaInsp" min="0" max="2" step="0.1" value="0"><span data-out="v3PausaInsp">0</span></div>
+          </div>
+          <div id="v3ParamsPCV" class="vent-params" style="display:none">
+            <div class="field"><label>Pressão controlada (cmH₂O)</label><input type="range" id="v3Pressao" min="5" max="40" step="1" value="15"><span data-out="v3Pressao">15</span></div>
+            <div class="field"><label>Frequência (irpm)</label><input type="range" id="v3FrequenciaP" min="6" max="40" step="1" value="14"><span data-out="v3FrequenciaP">14</span></div>
+            <div class="field"><label>Tempo inspiratório (s)</label><input type="range" id="v3tInsp" min="0.5" max="2" step="0.1" value="1"><span data-out="v3tInsp">1</span></div>
+            <div class="field"><label>Tempo de subida (s)</label><input type="range" id="v3tSubidaP" min="0.05" max="0.5" step="0.05" value="0.1"><span data-out="v3tSubidaP">0.1</span></div>
+          </div>
+          <div id="v3ParamsPSV" class="vent-params" style="display:none">
+            <div class="field"><label>Pressão de suporte (cmH₂O acima do PEEP)</label><input type="range" id="v3PS" min="0" max="30" step="1" value="10"><span data-out="v3PS">10</span></div>
+            <div class="field"><label>Tempo de subida (s)</label><input type="range" id="v3tSubida" min="0.05" max="0.5" step="0.05" value="0.1"><span data-out="v3tSubida">0.1</span></div>
+            <p class="hint">Só cicla se o paciente tiver esforço respiratório espontâneo — sem esforço, PSV isolado deixa o paciente em apneia.</p>
+          </div>
+          <div class="field"><label>PEEP (cmH₂O)</label><input type="range" id="v3PEEP" min="0" max="24" step="1" value="5"><span data-out="v3PEEP">5</span></div>
+          <div class="field"><label>FiO₂ (%)</label><input type="range" id="v3FIO2" min="21" max="100" step="1" value="40"><span data-out="v3FIO2">40</span></div>
+          <div class="field"><label>Sensibilidade de disparo</label>
+            <select id="v3SensType"><option value="pressao">Pressão (cmH₂O)</option><option value="fluxo">Fluxo (L/min)</option></select>
+            <input type="range" id="v3SensValue" min="1" max="10" step="0.5" value="2"><span data-out="v3SensValue">2</span>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button id="v3PlayPause" class="primary" style="width:auto;flex:1">▶ INICIAR VENTILAÇÃO</button>
+          </div>
+        </div>
+        <div class="log card"><h3>Linha do tempo</h3><div id="v3EventLog"></div></div>
+      </aside>
+    </div>
+  </section>
+  <footer>Simulador educacional. Não destinado a orientar decisões clínicas em pacientes reais.</footer>
+</div>
+
+<div id="modal" class="modal hidden"><div class="modalbox card">
+  <h2 id="modalTitle"></h2><p id="modalText" style="color:#a9bec2"></p>
+  <div id="resultGrid" class="resultgrid"></div>
+  <div id="debriefing" class="debriefing"></div>
+  <div id="modalLog"></div>
+  <div class="actions"><button id="toPhase3" class="primary hidden">AVANÇAR PARA VENTILAÇÃO MECÂNICA</button><button id="genReport" class="secondary">📄 GERAR RELATÓRIO</button><button id="retry" class="primary">TENTAR NOVAMENTE</button><button id="newCase" class="secondary">NOVO CASO</button></div>
+</div></div>
+
+<div id="howtoModal" class="modal hidden"><div class="modalbox card howto">
+  <h2>Como jogar</h2>
+  <ol>
+    <li>Escolha seu nível — isso define o SpO₂ mínimo antes de uma PCR.</li>
+    <li>Escolha um caso clínico (leito) e leia o quadro do paciente.</li>
+    <li>Em 2 minutos, use pré-oxigenação, pré-tratamento, hipnóticos e bloqueadores neuromusculares para manejar o paciente.</li>
+    <li>Se precisar de via aérea avançada, use o painel "Manejo da via aérea" — as técnicas certas dependem do caso (Cormack-Lehane, trauma facial, possibilidade de ventilação supraglótica etc.).</li>
+    <li>Na via aérea básica (AMBU+máscara, Guedel, cânula nasofaríngea), cada paciente esconde fatores próprios (ex.: barba, edentulismo, edema facial, sedação insuficiente) que mudam se a saturação melhora, piora ou fica igual — você só descobre tentando.</li>
+    <li>Antes de sedar e pré-oxigenar, posicione o paciente: coxim occipital (crianças maiores/adultos), coxim interescapular (até 4-5 anos), rodilha occipital + interescapular (recém-nascido), ou rampa (obesos/gestantes). Posicionamento errado ou ausente piora o Cormack-Lehane em pelo menos 1 ponto.</li>
+    <li>Em pacientes obesos, só o CPAP consegue elevar a SpO₂ a 100% na pré-oxigenação — os demais dispositivos ficam parciais.</li>
+    <li>Na via aérea avançada, laringoscopia direta ou videolaringoscopia só revelam o Cormack-Lehane (1 a 4) — não intubam sozinhas. Depois use "Intubar" (Cormack I sempre funciona), "Intubação com fio-guia" (funciona em Cormack I ou II) ou, em Cormack II/III, introduza o bougie primeiro e depois clique em "Intubar". Em Cormack IV, use o dispositivo supraglótico.</li>
+    <li>Bloqueadores neuromusculares zeram a FR no monitor e aceleram o cronômetro em 2x — o paciente fica em apneia até a via aérea ser resolvida.</li>
+    <li>Se a SpO₂ cair até o cutoff do seu nível, o paciente entra em PCR — GAME OVER.</li>
+    <li>Se você sobreviver aos 2 minutos com a via aérea estabelecida, pode avançar para a Fase 3: configurar o ventilador mecânico (VCV, PCV ou PSV/CPAP), ajustar PEEP, FiO₂, sensibilidade de disparo, pausa inspiratória e formato da onda de fluxo — e manter o paciente estável, inclusive reagindo a uma desconexão simulada.</li>
+    <li>Na Fase 3, o preset real de mecânica pulmonar do paciente não é revelado — você acompanha a Complacência/Resistência calculadas a partir das curvas e pode colher uma gasometria arterial (pH, PaO₂, PaCO₂) para ajustar a conduta.</li>
+  </ol>
+  <div class="actions"><button id="howtoClose" class="primary">ENTENDI</button></div>
+</div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+const LEVELS={
+ academic:{name:"Acadêmico",cutoff:65},
+ doctoral:{name:"Doutorando",cutoff:70},
+ general:{name:"Médico generalista",cutoff:75},
+ expert:{name:"Anestesista / Emergencista / Intensivista",cutoff:80}
+};
+// Critérios hemodinâmicos de PCR — regra NOVA, não vem da planilha. Valores de base
+// vêm de referências reais (não inventados): bradicardia crítica pediátrica <60bpm
+// e hipotensão por idade seguem PALS/ATLS; bradicardia crítica adulta <50bpm segue
+// o limiar de bradicardia sintomática/instável do ACLS. O ajuste por nível do
+// jogador (±10/±5) é decisão de design, no mesmo espaçamento já usado no cutoff de SpO2.
+const LEVEL_OFFSET={academic:-10,doctoral:-5,general:0,expert:5};
+// Posicionamento correto por perfil do paciente (regra nova, não vem da planilha):
+// RN (idade=0/<1 mês): coxim interescapular + rodilha occipital juntos.
+// Criança até 4-5 anos: coxim interescapular sozinho.
+// Obesos/gestantes: rampa (tem prioridade sobre a idade).
+// Crianças maiores e adultos: coxim occipital.
+function getRequiredPositioning(age,obeseOrPregnant){
+  if(obeseOrPregnant)return["pos_rampa"];
+  if(age<1)return["pos_interescapular","pos_rodilha"];
+  if(age<=5)return["pos_interescapular"];
+  return["pos_occipital"];
+}
+// Classifica o posicionamento feito pelo jogador: "correct" (ideal para o perfil),
+// "neutral" (rampa usada fora de obesos/gestantes — não ajuda, mas também não piora
+// a visualização) ou "wrong" (nada feito, ou outra escolha inadequada).
+function positioningQuality(age,obeseOrPregnant,appliedIds){
+  const required=getRequiredPositioning(age,obeseOrPregnant);
+  if(required.every(id=>appliedIds.includes(id)))return"correct";
+  if(!obeseOrPregnant&&appliedIds.includes("pos_rampa"))return"neutral";
+  return"wrong";
+}
+// Aviso "próximo ao limite de PCR" — cada parâmetro é avaliado separadamente, para
+// não continuar dizendo "SATURAÇÃO" quando na verdade só FC/PA ainda estão marginais
+// (bug relatado: SpO2 em 100% mas o aviso genérico continuava aparecendo).
+function updateWarningBanner(sel,v,cutoff,hemo,hemoApplies){
+  const el=$(sel);if(!el)return;
+  const parts=[];
+  if(v.spo2<=cutoff+5)parts.push("SpO₂");
+  if(hemoApplies&&v.hr<=hemo.hr+10)parts.push("FC");
+  if(hemoApplies&&v.pas<=hemo.pas+10)parts.push("PA");
+  el.classList.toggle("hidden",parts.length===0);
+  if(parts.length)el.textContent=`⚠ ${parts.join(" / ")} PRÓXIMO(A) AO LIMITE DE PCR`;
+}
+// Score de estabilidade hemodinâmica (regra nova, não vem da planilha) — 0 a 100,
+// contínuo durante toda a partida, sobe/desce a cada instante conforme SpO2/FC/PA
+// ficam dentro ou fora de faixas seguras. Reflete diretamente as condutas do jogador:
+// grandes hipotensões/hipertensões, brady/taquicardias e quedas de SpO2 penalizam;
+// manter o paciente estável recupera o score aos poucos.
+function spo2Zone(spo2){
+  if(spo2<88)return"danger";
+  if(spo2<94)return"caution";
+  return"good";
+}
+function hrNormalRange(age){ // faixas aproximadas de FC normal por idade (referência PALS)
+  if(age<1)return[100,160];
+  if(age<3)return[90,150];
+  if(age<6)return[80,140];
+  if(age<12)return[70,120];
+  return[60,100]; // adolescente/adulto
+}
+function hrZone(hr,age){
+  const[lo,hi]=hrNormalRange(age);
+  if(hr<lo*0.6||hr>hi*1.4)return"danger";
+  if(hr<lo||hr>hi)return"caution";
+  return"good";
+}
+function pasNormalRange(age){
+  let lo;
+  if(age<1)lo=70;else if(age<=10)lo=70+2*age;else lo=90;
+  const hi=age<18?lo+70:140;
+  return[lo,hi];
+}
+function pasZone(pas,age){
+  const[lo,hi]=pasNormalRange(age);
+  if(pas<lo*0.7||pas>hi*1.3)return"danger";
+  if(pas<lo||pas>hi)return"caution";
+  return"good";
+}
+function scoreRate(zone){return zone==="danger"?-3:zone==="caution"?-1:0.5;}
+// Score = combinação de dois componentes independentes (regra ajustada pelo usuário):
+// - stabilityScore: contínuo, sobe/desce a cada instante com SpO2/FC/PA (pode se recuperar).
+// - conductScore: só muda em pontos discretos (condutas certas/erradas) e NUNCA se
+//   recupera sozinho com o tempo — por isso uma conduta errada sempre deixa marca no
+//   score final, mesmo que a estabilidade depois volte a 100%.
+function recomputeScore(){
+  if(S.stabilityScore==null)S.stabilityScore=100;
+  if(S.conductScore==null)S.conductScore=100;
+  S.score=Math.round((S.stabilityScore+S.conductScore)/2);
+  if(S.minScore==null||S.score<S.minScore)S.minScore=S.score;
+}
+function updateScore(dt,v,age){
+  if(S.stabilityScore==null)S.stabilityScore=100;
+  if(S.conductScore==null)S.conductScore=100;
+  const rate=scoreRate(spo2Zone(v.spo2))+scoreRate(hrZone(v.hr,age))+scoreRate(pasZone(v.pas,age));
+  S.stabilityScore=clamp(S.stabilityScore+rate*dt,0,100);
+  recomputeScore();
+}
+// Debriefing final (regra nova): explica em texto, para o aluno, de onde veio o score —
+// separando o que veio da estabilidade hemodinâmica do que veio de condutas certas/erradas.
+function buildPrintReport(){
+  const st=S.student||{name:"",date:"",city:""};
+  const stab=Math.round(S.stabilityScore==null?100:S.stabilityScore);
+  const cond=Math.round(S.conductScore==null?100:S.conductScore);
+  const score=Math.round(S.score==null?100:S.score);
+  const goodItems=S.events.filter(e=>e.text.startsWith("✓ Conduta:")).map(e=>e.text.replace("✓ Conduta: ",""));
+  const badItems=S.events.filter(e=>e.text.startsWith("⚠ Conduta:")).map(e=>e.text.replace("⚠ Conduta: ",""));
+  const outcome=$("#modalTitle")?$("#modalTitle").textContent:"";
+  const outcomeText=$("#modalText")?$("#modalText").textContent:"";
+  const dateFmt=st.date?new Date(st.date+"T00:00:00").toLocaleDateString("pt-BR"):"—";
+  const timeline=S.events.map(e=>`<tr><td>${fmtTime(e.time)}</td><td>${e.text.replace(/</g,"&lt;")}</td></tr>`).join("");
+  return `
+    <h1>JOGO SAVeM — Relatório da Simulação</h1>
+    <div class="meta">
+      <b>Aluno:</b> ${st.name||"—"} &nbsp; | &nbsp; <b>Data da turma:</b> ${dateFmt} &nbsp; | &nbsp; <b>Cidade:</b> ${st.city||"—"}<br>
+      <b>Nível:</b> ${LEVELS[S.level].name} &nbsp; | &nbsp; <b>Caso:</b> ${S.case.name} &nbsp; | &nbsp; <b>Resultado:</b> ${outcome} — ${outcomeText}
+    </div>
+    <h2>Caso clínico</h2>
+    <p style="font-size:12px">${S.case.description}</p>
+    <h2>Score final</h2>
+    <table>
+      <tr><td><b>Score final</b></td><td><b>${score}% — ${scoreLabel(score)}</b></td></tr>
+      <tr><td>↳ Estabilidade hemodinâmica</td><td>${stab}%</td></tr>
+      <tr><td>↳ Condutas</td><td>${cond}%</td></tr>
+    </table>
+    <h2>Debriefing</h2>
+    <p style="font-size:12px"><b>Condutas que reduziram o score:</b></p>
+    ${badItems.length?`<ul>${badItems.map(t=>`<li class="bad">✗ ${t}</li>`).join("")}</ul>`:"<p style='font-size:12px'>Nenhuma.</p>"}
+    <p style="font-size:12px"><b>Condutas assertivas:</b></p>
+    ${goodItems.length?`<ul>${goodItems.map(t=>`<li class="good">✓ ${t}</li>`).join("")}</ul>`:"<p style='font-size:12px'>Nenhuma registrada.</p>"}
+    <h2>Linha do tempo das intervenções</h2>
+    <table>${timeline}</table>
+    <p style="font-size:10px;color:#888;margin-top:20px">Simulador educacional. Não destinado a orientar decisões clínicas em pacientes reais.</p>
+  `;
+}
+function generateReport(){
+  const btn=$("#genReport");
+  const originalLabel=btn.textContent;
+  btn.disabled=true;btn.textContent="Gerando relatório...";
+  buildAndSavePdf().catch(err=>{
+    console.error(err);
+    alert("Não foi possível gerar o PDF aqui. Tente novamente, ou peça para reabrir esta simulação.");
+  }).finally(()=>{
+    btn.disabled=false;btn.textContent=originalLabel;
+  });
+}
+async function buildAndSavePdf(){
+  const { jsPDF } = window.jspdf;
+  const doc=new jsPDF({unit:"mm",format:"a4"});
+  const pageW=210,pageH=297,marginX=18;
+  let y=20;
+  const lineH=5.6;
+  // jsPDF's fontes padrão (Helvetica) quebram com acentos/símbolos (texto "espaçado" e
+  // ilegível) — substitui por equivalentes ASCII antes de qualquer doc.text().
+  function T(text){
+    if(text==null)return"";
+    const map={"á":"a","à":"a","â":"a","ã":"a","ä":"a","Á":"A","À":"A","Â":"A","Ã":"A","Ä":"A",
+      "é":"e","è":"e","ê":"e","ë":"e","É":"E","È":"E","Ê":"E","Ë":"E",
+      "í":"i","ì":"i","î":"i","ï":"i","Í":"I","Ì":"I","Î":"I","Ï":"I",
+      "ó":"o","ò":"o","ô":"o","õ":"o","ö":"o","Ó":"O","Ò":"O","Ô":"O","Õ":"O","Ö":"O",
+      "ú":"u","ù":"u","û":"u","ü":"u","Ú":"U","Ù":"U","Û":"U","Ü":"U",
+      "ç":"c","Ç":"C","ñ":"n","Ñ":"N",
+      "✓":"OK","✗":"X","⚠":"!","📄":"","🩺":"","🫁":"","🚫":"X",
+      "—":"-","–":"-","…":"...","\u201c":'"',"\u201d":'"',"\u2018":"'","\u2019":"'",
+      "→":"->","↳":">>"};
+    return String(text).replace(/[^\x00-\x7F]/g,ch=>map[ch]!==undefined?map[ch]:"");
+  }
+  function ensureSpace(extra){
+    if(y+extra>pageH-18){doc.addPage();y=20;}
+  }
+  function heading(text,size=12.5){
+    y+=2;ensureSpace(11);
+    doc.setFont(undefined,"bold");doc.setFontSize(size);doc.setTextColor(15,45,60);
+    doc.text(T(text),marginX,y);y+=2;
+    doc.setDrawColor(150,180,190);doc.setLineWidth(.4);doc.line(marginX,y+1.5,pageW-marginX,y+1.5);
+    y+=7;
+  }
+  function para(text,size=10,color=[45,45,45]){
+    doc.setFont(undefined,"normal");doc.setFontSize(size);doc.setTextColor(...color);
+    const lines=doc.splitTextToSize(T(text),pageW-marginX*2);
+    lines.forEach(l=>{ensureSpace(lineH);doc.text(l,marginX,y);y+=lineH;});
+  }
+  function bullet(text,color){
+    doc.setFont(undefined,"normal");doc.setFontSize(9.5);doc.setTextColor(...color);
+    const indent=6;
+    const lines=doc.splitTextToSize(T(text),pageW-marginX*2-indent);
+    lines.forEach((l,i)=>{ensureSpace(lineH);doc.text((i===0?"- ":"  ")+l,marginX+indent-6,y);y+=lineH;});
+    y+=1;
+  }
+  function footer(){
+    const n=doc.internal.getNumberOfPages();
+    for(let p=1;p<=n;p++){
+      doc.setPage(p);
+      doc.setFont(undefined,"italic");doc.setFontSize(7.5);doc.setTextColor(150,150,150);
+      doc.text(T("Simulador educacional. Nao destinado a orientar decisoes clinicas em pacientes reais."),marginX,pageH-10);
+      doc.text(`${p}/${n}`,pageW-marginX-8,pageH-10);
+    }
+  }
+
+  const st=S.student||{name:"",date:"",city:""};
+  const stab=Math.round(S.stabilityScore==null?100:S.stabilityScore);
+  const cond=Math.round(S.conductScore==null?100:S.conductScore);
+  const score=Math.round(S.score==null?100:S.score);
+  const goodItems=S.events.filter(e=>e.text.startsWith("✓ Conduta:")).map(e=>e.text.replace("✓ Conduta: ",""));
+  const badItems=S.events.filter(e=>e.text.startsWith("⚠ Conduta:")).map(e=>e.text.replace("⚠ Conduta: ",""));
+  const outcome=$("#modalTitle")?$("#modalTitle").textContent:"";
+  const outcomeText=$("#modalText")?$("#modalText").textContent:"";
+  const dateFmt=st.date?new Date(st.date+"T00:00:00").toLocaleDateString("pt-BR"):"-";
+
+  doc.setFillColor(15,45,60);doc.rect(0,0,pageW,16,"F");
+  doc.setFont(undefined,"bold");doc.setFontSize(16);doc.setTextColor(255,255,255);
+  doc.text(T("JOGO SAVeM — Relatório da Simulação"),marginX,10.5);
+  y=26;
+
+  doc.setFillColor(245,248,249);doc.rect(marginX-4,y-5,pageW-(marginX-4)*2,20,"F");
+  para(`Aluno: ${st.name||"-"}   |   Data da turma: ${dateFmt}   |   Cidade: ${st.city||"-"}`,10,[40,40,40]);
+  para(`Nivel: ${LEVELS[S.level].name}   |   Caso: ${S.case.name}`,10,[40,40,40]);
+  para(`Resultado: ${T(outcome)} - ${outcomeText}`,10,[40,40,40]);
+  y+=4;
+
+  heading("Caso clinico");
+  para(S.case.description);
+
+  heading("Score final");
+  para(`Score final: ${score}%  -  ${scoreLabel(score)}`,12,[10,10,10]);
+  para(`Estabilidade hemodinamica: ${stab}%`);
+  para(`Condutas: ${cond}%`);
+
+  heading("Debriefing — condutas que reduziram o score");
+  if(badItems.length)badItems.forEach(t=>bullet(t,[150,20,20]));
+  else para("Nenhuma.");
+
+  heading("Debriefing — condutas assertivas");
+  if(goodItems.length)goodItems.forEach(t=>bullet(t,[15,110,40]));
+  else para("Nenhuma registrada.");
+
+  heading("Linha do tempo das intervencoes");
+  const timeColW=18;
+  S.events.forEach((e,idx)=>{
+    doc.setFont(undefined,"normal");doc.setFontSize(9.5);
+    const lines=doc.splitTextToSize(T(e.text),pageW-marginX*2-timeColW);
+    ensureSpace(lineH*lines.length);
+    if(idx%2===1){doc.setFillColor(248,249,250);doc.rect(marginX-2,y-4,pageW-marginX*2+4,lineH*lines.length+1,"F");}
+    doc.setFont(undefined,"bold");doc.setTextColor(20,80,140);
+    doc.text(fmtTime(e.time),marginX,y);
+    doc.setFont(undefined,"normal");doc.setTextColor(35,35,35);
+    lines.forEach((l,i)=>{doc.text(l,marginX+timeColW,y+i*lineH);});
+    y+=lineH*lines.length;
+  });
+
+  footer();
+  const blob=doc.output("blob");
+  const safeCase=(S.case.name||"caso").replace(/[^a-z0-9]/gi,"_");
+  const safeName=(st.name||"aluno").replace(/[^a-z0-9]/gi,"_");
+  const filename=`relatorio_savem_${safeName}_${safeCase}.pdf`;
+
+  if(!window.claude||!window.claude.use){
+    alert("O download não está disponível nesta visualização. Abra a simulação publicada (fora do modo de edição) para gerar o PDF.");
+    return;
+  }
+  const downloads=await window.claude.use("downloads");
+  if(!downloads){
+    alert("O download não está disponível nesta visualização. Abra a simulação publicada (fora do modo de edição) para gerar o PDF.");
+    return;
+  }
+  try{
+    await downloads.save({filename,data:blob});
+  }catch(err){
+    if(err&&err.code==="declined")return;
+    throw err;
+  }
+}
+function buildDebriefing(){
+  const stab=Math.round(S.stabilityScore==null?100:S.stabilityScore);
+  const cond=Math.round(S.conductScore==null?100:S.conductScore);
+  const score=Math.round(S.score==null?100:S.score);
+  const goodItems=S.events.filter(e=>e.text.startsWith("✓ Conduta:")).map(e=>e.text.replace("✓ Conduta: ",""));
+  const badItems=S.events.filter(e=>e.text.startsWith("⚠ Conduta:")).map(e=>e.text.replace("⚠ Conduta: ",""));
+  let stabNarrative;
+  if(stab>=90)stabNarrative="Os sinais vitais se mantiveram dentro de faixas seguras durante quase toda a simulação.";
+  else if(stab>=75)stabNarrative="Houve oscilações pontuais de SpO2, FC ou PA fora da faixa normal, mas sem grandes desvios sustentados.";
+  else if(stab>=50)stabNarrative="O paciente passou parte relevante do tempo com SpO2, FC ou PA fora da faixa segura — sinal de instabilidade hemodinâmica moderada.";
+  else stabNarrative="O paciente permaneceu por tempo significativo em zona de risco (hipoxemia, hipotensão/hipertensão ou brady/taquicardia acentuadas) — instabilidade hemodinâmica importante.";
+  const extremes=[];
+  if(S.min&&S.min.spo2<94)extremes.push(`menor SpO2 registrada: ${S.min.spo2.toFixed(0)}%`);
+  if(S.min&&S.min.pas<90)extremes.push(`menor PAS registrada: ${S.min.pas.toFixed(0)} mmHg`);
+  if(S.max&&S.max.hr>0)extremes.push(`maior FC registrada: ${S.max.hr.toFixed(0)} bpm`);
+  let html=`<h4>📋 Debriefing — Score final: ${score}% (${scoreLabel(score)})</h4>`;
+  html+=`<p><b>Estabilidade hemodinâmica: ${stab}%.</b> ${stabNarrative}${extremes.length?" Destaques: "+extremes.join("; ")+".":""}</p>`;
+  html+=`<p><b>Condutas: ${cond}%.</b> ${badItems.length?"Fatores que reduziram o score nesta simulação:":"Nenhuma conduta incorreta identificada — parabéns."}</p>`;
+  if(badItems.length)html+=`<ul>${badItems.map(t=>`<li class="bad-item">✗ ${t}</li>`).join("")}</ul>`;
+  if(goodItems.length)html+=`<p><b>Condutas assertivas identificadas:</b></p><ul>${goodItems.map(t=>`<li class="good-item">✓ ${t}</li>`).join("")}</ul>`;
+  return html;
+}
+function scoreLabel(s){
+  if(s>=90)return"Excelente controle hemodinâmico";
+  if(s>=75)return"Bom controle, com oscilações pontuais";
+  if(s>=50)return"Instabilidade hemodinâmica moderada";
+  return"Instabilidade hemodinâmica importante";
+}
+function hemoCutoffs(age,level){
+  const off=LEVEL_OFFSET[level];
+  const hrBase=age<18?60:50; // PALS: <60bpm c/ má perfusão em pediatria; ACLS: <50bpm em adulto
+  let pasBase;
+  if(age<1)pasBase=70;
+  else if(age<=10)pasBase=70+2*age;
+  else pasBase=90;
+  return{hr:hrBase+off,pas:pasBase+off};
+}
+
+const CASES=[
+{id:"leito01",name:"Leito 01",description:"Adolescente de 13 anos, sem movimento ocular, em uso de cânula orofaríngea, respiração lenta e superficial, pálido, 50 kg, TEC 6 segundos, pulsos periféricos ausentes.",weight:50,spo2:80,pas:63,pad:33,hr:44,rr:8,states:{fullStomach:false,agitated:false,shock:false,bronchospasm:false,difficultAirway:false,unconscious:true}},
+{id:"leito02",name:"Leito 02",description:"Adulto jovem obeso no pós-operatório de cirurgia cardíaca, respirando com uso de musculatura acessória, drenos torácicos, pálido, 120 kg, TEC 2 segundos, pulsos cheios.",weight:120,spo2:92,pas:101,pad:70,hr:90,rr:18,states:{fullStomach:true,agitated:false,shock:false,bronchospasm:false,difficultAirway:false,obese:true}},
+{id:"leito03",name:"Leito 03",description:"Criança de 8 anos, 30 kg, dispneia importante, sibilos expiratórios, TEC 2 segundos, pulsos cheios, ECG 14, dificuldade de falar frases completas.",weight:30,spo2:86,pas:100,pad:65,hr:120,rr:40,states:{fullStomach:true,agitated:true,shock:false,bronchospasm:false,difficultAirway:false}},
+{id:"leito04",name:"Leito 04",description:"Idoso com dor abdominal importante após queda e trauma abdominal há 2 dias, 60 kg, TEC 5 s, pulsos finos, ECG 13, distensão abdominal.",weight:60,spo2:94,pas:75,pad:50,hr:160,rr:38,states:{fullStomach:true,agitated:false,shock:true,bronchospasm:false,difficultAirway:false}},
+{id:"leito05",name:"Leito 05",description:"Adulto obeso com COVID-19 há 14 dias, dispneia progressiva e febre. 130 kg.",weight:130,spo2:91,pas:78,pad:50,hr:130,rr:45,states:{fullStomach:true,agitated:false,shock:false,bronchospasm:true,difficultAirway:false,obese:true}},
+{id:"leito06",name:"Leito 06",description:"Bebê de 1 ano, 12 kg, dificuldade de respirar de madrugada. Estridor inspiratório.",weight:12,spo2:91,pas:78,pad:50,hr:130,rr:45,states:{fullStomach:true,agitated:false,shock:false,bronchospasm:false,difficultAirway:true}},
+{id:"leito07",name:"Leito 07",description:"Clébson, 25 anos, vítima de ferimento por arma de fogo em tórax e abdome, admitido agitado, confuso e desorientado, 80 kg.",weight:80,spo2:80,pas:60,pad:40,hr:100,rr:30,states:{fullStomach:true,agitated:true,shock:true,bronchospasm:false,difficultAirway:false}},
+{id:"leito08",name:"Leito 08",description:"Severino, 87 anos, renal crônico dialítico, admitido com diarreia aquosa há 3 dias, evoluiu com rebaixamento do nível de consciência.",weight:70,spo2:89,pas:80,pad:60,hr:80,rr:28,states:{fullStomach:true,agitated:true,shock:false,bronchospasm:true,difficultAirway:false,renalFailure:true,unconscious:true}},
+{id:"leito09",name:"Leito 09",description:"Adolescente trazido de festa de aniversário. Urticária na pele e angioedema na face, 50 kg.",weight:50,spo2:94,pas:70,pad:25,hr:165,rr:48,states:{fullStomach:true,agitated:false,shock:true,bronchospasm:true,difficultAirway:false}},
+{id:"leito10",name:"Leito 10",description:"Paciente estava indo para clínica fazer diálise. Entrada no hospital em PCR / iminência de PCR.",weight:null,spo2:0,pas:0,pad:0,hr:0,rr:0,states:{fullStomach:true,agitated:false,shock:false,bronchospasm:true,difficultAirway:true,unconscious:true}}
+];
+
+// FASE 2 — Variáveis de via aérea por caso.
+// Regras de jogo adicionadas pelo usuário; mantidas separadas dos coeficientes originais da planilha.
+const AIRWAY_CASES={
+ leito01:{age:13,faceTrauma:false,skullBaseFracture:false,difficultMask:false,maskDifficultyReason:null,cormack:1,sgdPossible:true},
+ leito02:{age:30,faceTrauma:false,skullBaseFracture:false,difficultMask:true,maskDifficultyReason:"obesidade (pescoço curto, tecido faríngeo redundante) — vedação da máscara comprometida",cormack:2,sgdPossible:true},
+ leito03:{age:8,faceTrauma:false,skullBaseFracture:false,difficultMask:false,maskDifficultyReason:null,cormack:2,sgdPossible:true},
+ leito04:{age:72,faceTrauma:false,skullBaseFracture:false,difficultMask:true,maskDifficultyReason:"paciente edêntulo (sem dentição) — vedação da máscara comprometida",cormack:3,sgdPossible:true},
+ leito05:{age:45,faceTrauma:false,skullBaseFracture:false,difficultMask:true,maskDifficultyReason:"obesidade (pescoço curto, tecido faríngeo redundante) e barba densa — vedação da máscara comprometida",cormack:2,sgdPossible:true},
+ leito06:{age:1,faceTrauma:false,skullBaseFracture:false,difficultMask:true,maskDifficultyReason:"edema de via aérea superior (estridor) — ventilação com máscara pouco efetiva",cormack:4,sgdPossible:false,difficultAirwayPredictors:"lactente: pescoço curto, via aérea pequena/anterior, edema laríngeo por estridor — obstrução alta que também compromete a ventilação supraglótica"},
+ leito07:{age:25,faceTrauma:true,skullBaseFracture:true,difficultMask:true,maskDifficultyReason:"trauma facial extenso — vedação da máscara comprometida",cormack:4,sgdPossible:false,difficultAirwayPredictors:"trauma facial extenso com sangramento e distorção anatômica — impede tanto a visualização glótica quanto a vedação/ventilação com dispositivo supraglótico"},
+ leito08:{age:87,faceTrauma:false,skullBaseFracture:false,difficultMask:true,maskDifficultyReason:"edentulismo e face encovada (idoso) — vedação da máscara comprometida",cormack:3,sgdPossible:true},
+ leito09:{age:16,faceTrauma:false,skullBaseFracture:false,difficultMask:true,maskDifficultyReason:"edema facial por angioedema — vedação da máscara comprometida",cormack:3,sgdPossible:true},
+ leito10:{age:60,faceTrauma:false,skullBaseFracture:false,difficultMask:true,maskDifficultyReason:"paciente peri-PCR, tônus de via aérea reduzido — ventilação com máscara pouco efetiva",cormack:4,sgdPossible:true}
+};
+const AIRWAY_TOOLS=[
+ {cat:"Via aérea básica",id:"ambu_airway",name:"Ventilar com AMBU + máscara"},
+ {cat:"Via aérea básica",id:"guedel",name:"Cânula de Guedel"},
+ {cat:"Via aérea básica",id:"npa",name:"Cânula nasofaríngea"},
+ {cat:"Via aérea avançada",id:"direct",name:"Laringoscopia direta (visualizar)"},
+ {cat:"Via aérea avançada",id:"video",name:"Videolaringoscopia (visualizar)"},
+ {cat:"Via aérea avançada",id:"intubar",name:"Intubar (passar o tubo)"},
+ {cat:"Via aérea avançada",id:"stylet",name:"Intubação com fio-guia"},
+ {cat:"Via aérea avançada",id:"bougie",name:"Introduzir bougie"},
+ {cat:"Via aérea avançada",id:"sgd",name:"Dispositivo supraglótico (máscara laríngea)"},
+ {cat:"Via aérea cirúrgica",id:"crico_surgical",name:"Crico: lâmina–bougie–tubo"},
+ {cat:"Via aérea cirúrgica",id:"crico_puncture",name:"Crico por punção"}
+];
+
+const TOOLS=[
+{cat:"Posicionamento",id:"pos_occipital",name:"Coxim occipital",posType:"coxim_occipital"},
+{cat:"Posicionamento",id:"pos_interescapular",name:"Coxim interescapular",posType:"coxim_interescapular"},
+{cat:"Posicionamento",id:"pos_rodilha",name:"Rodilha occipital (RN)",posType:"rodilha_occipital"},
+{cat:"Posicionamento",id:"pos_rampa",name:"Posicionamento em rampa",posType:"rampa"},
+{cat:"Pré-oxigenação",id:"o2_5",name:"Cateter O₂ 5 L/min",o2:.35},
+{cat:"Pré-oxigenação",id:"o2_15",name:"Cateter O₂ 15 L/min",o2:.40},
+{cat:"Pré-oxigenação",id:"venturi",name:"Venturi 50%",o2:.50},
+{cat:"Pré-oxigenação",id:"mnr",name:"MNR 100%",o2:1},
+{cat:"Pré-oxigenação",id:"cpap",name:"CPAP 10 cmH₂O",o2:1},
+{cat:"Pré-oxigenação",id:"cnaf",name:"CNAF",o2:1},
+{cat:"Pré-oxigenação",id:"ambu",name:"Ventilação manual (AMBU)",o2:1},
+{cat:"Pré-tratamento",id:"lido_iv",name:"Lidocaína IV 1,5 mg/kg",pa:0,hr:0,rr:0},
+{cat:"Pré-tratamento",id:"lido_spray",name:"Lidocaína spray",pa:0,hr:0,rr:0},
+{cat:"Pré-tratamento",id:"keta_low",name:"Cetamina 0,2 mg/kg",pa:.15,hr:.2,rr:0,removesAgitation:true},
+{cat:"Pré-tratamento",id:"metaraminol",name:"Metaraminol",pa:.3,hr:-.2,rr:0},
+{cat:"Pré-tratamento",id:"efedrina",name:"Efedrina",pa:.2,hr:.1,rr:0},
+{cat:"Pré-tratamento",id:"adrenalina",name:"Adrenalina 20 mcg",pa:.4,hr:.2,rr:0},
+{cat:"Pré-tratamento",id:"alfentanil",name:"Alfentanil 20 mcg/kg",pa:-.08,hr:-.2,rr:-.2},
+{cat:"Pré-tratamento",id:"fenta1",name:"Fentanil 1 mcg/kg",pa:-.08,hr:-.2,rr:-.2},
+{cat:"Pré-tratamento",id:"fenta2",name:"Fentanil 2 mcg/kg",pa:-.08,hr:-.2,rr:-.2},
+{cat:"Pré-tratamento",id:"suf01",name:"Sufentanil 0,1 mcg/kg",pa:-.08,hr:-.2,rr:-.2},
+{cat:"Pré-tratamento",id:"suf02",name:"Sufentanil 0,2 mcg/kg",pa:-.08,hr:-.2,rr:-.2},
+{cat:"Hipnóticos",id:"mid02",name:"Midazolam 0,2 mg/kg",pa:-.05,hr:-.05,rr:-.1},
+{cat:"Hipnóticos",id:"mid03",name:"Midazolam 0,3 mg/kg",pa:-.1,hr:-.05,rr:-.2},
+{cat:"Hipnóticos",id:"keta2",name:"Cetamina 2 mg/kg",pa:.15,hr:.2,rr:0,removesAgitation:true},
+{cat:"Hipnóticos",id:"prop1",name:"Propofol 1 mg/kg",pa:-.1,hr:0,rr:-.1},
+{cat:"Hipnóticos",id:"prop2",name:"Propofol 2 mg/kg",pa:-.2,hr:0,rr:-.3},
+{cat:"Hipnóticos",id:"etomidato",name:"Etomidato 0,2 mg/kg",pa:0,hr:0,rr:-.3},
+{cat:"Hipnóticos",id:"dex",name:"Dexmedetomidina 1 mcg/kg / 10 min",pa:-.2,hr:-.2,rr:-.1},
+{cat:"Bloqueadores neuromusculares",id:"sux",name:"Succinilcolina 1,5 mg/kg",bnm:true},
+{cat:"Bloqueadores neuromusculares",id:"roc06",name:"Rocurônio 0,6 mg/kg",bnm:true},
+{cat:"Bloqueadores neuromusculares",id:"roc15",name:"Rocurônio 1,5 mg/kg",bnm:true},
+{cat:"Bloqueadores neuromusculares",id:"cis",name:"Cisatracúrio 0,15 mg/kg",bnm:true}
+];
+
+// FASE 3 — Ventilação mecânica. Presets portados de script-simulador.js (SAVeM),
+// com o bug de indexação corrigido (o código original usava par[id] em vez de
+// par[id-1], fazendo cada doença herdar os coeficientes da doença seguinte da lista).
+const VENT_PRESETS=[
+  {id:1,name:"Intubado SEM esforço",r:8,c:60,pmus:0,fpac:0,durPac:0,idealPeep:5,pf:400},
+  {id:2,name:"Intubado COM esforço",r:8,c:60,pmus:4,fpac:15,durPac:0.5,idealPeep:5,pf:380},
+  {id:3,name:"Asma",r:30,c:40,pmus:0,fpac:0,durPac:0,idealPeep:5,pf:350},
+  {id:4,name:"DPOC",r:25,c:70,pmus:0,fpac:0,durPac:0,idealPeep:5,pf:300},
+  {id:5,name:"Pneumonia (sem SDRA)",r:15,c:40,pmus:0,fpac:0,durPac:0,idealPeep:8,pf:250},
+  {id:6,name:"Pneumonia (com SDRA leve)",r:15,c:30,pmus:0,fpac:0,durPac:0,idealPeep:10,pf:250},
+  {id:7,name:"Pneumonia (com SDRA moderada)",r:15,c:25,pmus:0,fpac:0,durPac:0,idealPeep:12,pf:150},
+  {id:8,name:"Pneumonia (com SDRA grave)",r:15,c:20,pmus:0,fpac:0,durPac:0,idealPeep:16,pf:80},
+];
+// Mapeamento leito → preset de mecânica respiratória (decisão de design, não vem da
+// planilha original): reflete o quadro clínico de cada caso.
+const CASE_VENT_PRESET={
+  leito01:1, leito02:2, leito03:3, leito04:1, leito05:7,
+  leito06:1, leito07:6, leito08:2, leito09:3, leito10:8
+};
+let S={running:false,level:null,case:null,startReal:0,gameTime:0,bnmAt:null,applied:[],events:[],states:null,raf:null,min:{spo2:999,pas:999,map:999,hr:999,rr:999},max:{hr:-1},lastVitals:null,airway:null,airwayFeedback:'',airwayPenalty:0,airwayBoost:0,airwayFlags:null,cormackRevealed:false,bougiePlaced:false,laryngoscopyStimulus:false,cicoStartTime:null,apneicSince:null,oxygenationSecured:false};
+
+const $=s=>document.querySelector(s);
+const clamp=(v,min,max)=>Math.min(max,Math.max(min,v));
+const sum=(arr,key)=>arr.reduce((a,x)=>a+(x.tool[key]||0),0);
+function fmtTime(sec){sec=Math.max(0,Math.floor(sec));return `${String(Math.floor(sec/60)).padStart(2,"0")}:${String(sec%60).padStart(2,"0")}`}
+function effectiveGameTime(realElapsed){
+  if(S.bnmAt==null) return realElapsed;
+  return S.bnmAt + (realElapsed-S.bnmAt)*2;
+}
+function calculateVitals(t){
+  const c=S.case, apps=S.applied;
+  const pre=apps.filter(x=>x.tool.cat==="Pré-tratamento"), hyp=apps.filter(x=>x.tool.cat==="Hipnóticos");
+  const oxy=apps.filter(x=>x.tool.cat==="Pré-oxigenação");
+  let o2=oxy.length?Math.max(...oxy.map(x=>{
+    let val=x.tool.o2||0;
+    // Obesidade: só o CPAP recruta o suficiente para elevar a SpO2 a 100% — os demais
+    // dispositivos de pré-oxigenação ficam parciais (regra nova, não vem da planilha).
+    if(S.states.obese && x.tool.id!=="cpap") val=Math.min(val,0.5);
+    return val;
+  })):0;
+  if(S.states.agitated) o2=0;
+  const decay=.017*t;
+  let spo2=c.spo2+((100-c.spo2)*o2)-decay-S.airwayPenalty+S.airwayBoost;
+  if(S.cicoStartTime!=null) spo2-=0.3*(t-S.cicoStartTime); // CICO: queda progressiva até via aérea cirúrgica
+  if(S.apneicSince!=null) spo2-=0.25*(t-S.apneicSince); // apneia entre tentativas de intubação — ventile com AMBU/máscara para interromper
+  if(S.oxygenationSecured) spo2=Math.max(spo2,96);
+  let pasBase=c.pas-decay, padBase=c.pad-decay, hrBase=c.hr-decay, rrBase=c.rr-decay;
+  const prePA=sum(pre,"pa"), hypPA=sum(hyp,"pa"), preHR=sum(pre,"hr"), hypHR=sum(hyp,"hr"), preRR=sum(pre,"rr"), hypRR=sum(hyp,"rr");
+  let pas=(pasBase*(1+prePA))*(1+hypPA);
+  let pad=(padBase*(1+prePA))*(1+hypPA);
+  let hr=hrBase*(1+preHR+hypHR);
+  let rr=rrBase*(1+preRR+hypRR);
+  if(S.laryngoscopyStimulus){ pas*=1.3; pad*=1.3; hr*=1.3; } // resposta simpática à laringoscopia/videolaringoscopia
+  if(S.bnmAt!=null) rr=0;
+  const map=pad+(pas-pad)/3;
+  return {spo2:clamp(spo2,0,100),pas:Math.max(0,pas),pad:Math.max(0,pad),map:Math.max(0,map),hr:Math.max(0,hr),rr:Math.max(0,rr)};
+}
+
+function isSedated(){
+  return S.applied.some(x=>x.tool.cat==="Hipnóticos");
+}
+function airwayEvent(text,kind=""){
+  S.airwayFeedback=text;
+  S.events.push({time:S.gameTime,text});
+  renderLog();renderAirwayFeedback(kind);
+}
+function airwayPenalty(points,text){
+  S.airwayPenalty+=points;
+  airwayEvent(text,"bad");
+}
+function airwayBoostAdd(points,text){
+  S.airwayBoost+=points;
+  S.apneicSince=null; // ventilação eficaz entre tentativas interrompe a queda de SpO2
+  airwayEvent(text,"good");
+}
+function secureAirway(text){
+  S.oxygenationSecured=true;
+  S.apneicSince=null;
+  airwayEvent(text,"good");
+  setTimeout(()=>{
+    if(!S.running)return;
+    airwayEvent("🫁 Capnografia presente — onda de CO₂ confirma o correto posicionamento da via aérea.","good");
+    setTimeout(()=>{
+      if(!S.running)return;
+      finish("complete");
+    },2500);
+  },900);
+}
+function applyAirwayTool(tool){
+  if(!S.running || S.oxygenationSecured)return;
+  const a=S.airway;
+  if(tool.id==="ambu_airway"){
+    // Variável oculta do caso (barba, desdentado, edema facial etc.) — só é revelada ao tentar.
+    if(a.difficultMask) airwayEvent(`Ventilação com AMBU/máscara sem melhora da saturação — ${a.maskDifficultyReason}.`,"bad");
+    else if(!S.airwayFlags.ambuBoosted){
+      S.airwayFlags.ambuBoosted=true;
+      if(S.apneicSince!=null||S.cicoStartTime!=null)procedureBonus("ventilouEntreTentativas",10,"Ventilou com AMBU/máscara entre tentativas para reoxigenar antes de prosseguir — conduta correta.");
+      airwayBoostAdd(4,"Ventilação com AMBU/máscara efetiva — saturação melhora. É uma manobra temporizadora; ainda é possível prosseguir para a via aérea avançada.");
+    }
+    else airwayEvent("Ventilação com AMBU/máscara segue efetiva.","good");
+  } else if(tool.id==="guedel"){
+    if(!isSedated()){
+      if(!S.airwayFlags.guedelPenalized){S.airwayFlags.guedelPenalized=true;airwayPenalty(5,"Guedel em paciente não sedado: intolerância à cânula (reflexo de vômito) e piora da oxigenação.");}
+      else airwayEvent("Paciente ainda não sedado — Guedel continua mal tolerado.","bad");
+    } else if(!S.airwayFlags.guedelBoosted){
+      S.airwayFlags.guedelBoosted=true;
+      airwayBoostAdd(3,"Cânula de Guedel bem tolerada com o paciente sedado — facilita a ventilação com máscara.");
+    } else {
+      airwayEvent("Guedel já posicionado.","good");
+    }
+  } else if(tool.id==="npa"){
+    if(a.faceTrauma||a.skullBaseFracture){
+      if(!S.airwayFlags.npaPenalized){S.airwayFlags.npaPenalized=true;airwayPenalty(4,"Cânula nasofaríngea contraindicada neste caso: trauma facial/suspeita de fratura de base de crânio — piora da oxigenação/sangramento.");}
+      else airwayEvent("Cânula nasofaríngea segue contraindicada neste caso.","bad");
+    } else if(!S.airwayFlags.npaBoosted){
+      S.airwayFlags.npaBoosted=true;
+      airwayBoostAdd(4,"Cânula nasofaríngea bem tolerada mesmo sem sedação profunda — saturação melhora. É uma manobra temporizadora; ainda é possível prosseguir para a via aérea avançada.");
+    } else {
+      airwayEvent("Cânula nasofaríngea segue bem tolerada.","good");
+    }
+  } else if(tool.id==="direct" || tool.id==="video"){
+    // Apenas revela o Cormack-Lehane. Não intuba, não dá dica do próximo passo.
+    S.laryngoscopyAttempts=(S.laryngoscopyAttempts||0)+1;
+    if(S.laryngoscopyAttempts===1){
+      S.firstLaryngoscopyTool=tool.id;
+    } else if(S.laryngoscopyAttempts===2&&S.firstLaryngoscopyTool==="direct"&&tool.id==="video"&&a.cormack>=4){
+      procedureBonus("escalonouVideo",10,"Escalonou para videolaringoscopia na reavaliação após Cormack-Lehane IV na laringoscopia direta — melhora a chance de visualização.");
+    }
+    const viaNome = tool.id==="direct" ? "Laringoscopia direta" : "Videolaringoscopia";
+    const firstStimulus = !S.laryngoscopyStimulus;
+    if(firstStimulus) S.laryngoscopyStimulus = true;
+    const stimTxt = firstStimulus ? " Resposta simpática ao estímulo: FC e PA sobem 30%." : "";
+    if(!S.cormackRevealed){
+      S.cormackRevealed = true;
+      if(!isSedated()&&!S.states.unconscious)procedurePenalty("viaAereaSemSedacao",12,"Iniciou manejo de via aérea avançada sem sedação (nenhum hipnótico aplicado) em paciente consciente.");
+      // Penalidade de posicionamento inadequado (regra nova, não vem da planilha):
+      // RN precisa de coxim interescapular + rodilha occipital; crianças ≤5 anos, só
+      // coxim interescapular; crianças maiores/adultos, coxim occipital; obesos/gestantes, rampa.
+      // Rampa fora de obesos/gestantes é neutra — não ajuda, mas também não piora o Cormack.
+      const appliedIds=S.applied.map(x=>x.tool.id);
+      const posQuality=positioningQuality(a.age,S.states.obese||S.states.pregnant,appliedIds);
+      let posNote="";
+      if(posQuality==="wrong"){
+        a.cormack=Math.min(4,a.cormack+1);
+        posNote=" Posicionamento inadequado para este paciente piorou a visualização em pelo menos 1 ponto no Cormack-Lehane.";
+        procedurePenalty("posicionamentoErrado",12,"Posicionamento ausente ou inadequado para este paciente antes da via aérea.");
+      }
+      const pred=a.difficultAirwayPredictors?` Achados de via aérea difícil: ${a.difficultAirwayPredictors}.`:"";
+      airwayEvent(`${viaNome}: Cormack-Lehane ${a.cormack}.${pred}${posNote}${stimTxt}`,firstStimulus||posQuality==="wrong"?"bad":"");
+    } else {
+      airwayEvent(`Cormack-Lehane ${a.cormack}.${stimTxt}`,firstStimulus?"bad":"");
+    }
+  } else if(tool.id==="intubar"||tool.id==="bougie"||tool.id==="stylet"){
+    if(!S.cormackRevealed){
+      airwayEvent("Faça laringoscopia direta ou videolaringoscopia antes de tentar intubar — você precisa visualizar a via aérea primeiro.","bad");
+      return;
+    }
+    if(tool.id==="intubar"){
+      // Ação de passar o tubo. Depende do Cormack (e do bougie, se já introduzido).
+      if(a.cormack===1){
+        secureAirway("Paciente intubado — tubo passado com sucesso, via aérea estabelecida, saturação melhora.");
+      } else if(a.cormack===2||a.cormack===3){
+        if(S.bougiePlaced) secureAirway("Paciente intubado com o bougie como guia — via aérea estabelecida, saturação melhora.");
+        else{
+          if(S.apneicSince==null)S.apneicSince=S.gameTime;
+          if(!S.airwayFlags.intubarFail23){S.airwayFlags.intubarFail23=true;airwayPenalty(3,`Paciente não intubado — Cormack-Lehane ${a.cormack}, via glótica parcialmente visível. A saturação vai continuar caindo até a próxima tentativa — ventile com AMBU/máscara entre as tentativas para reoxigenar.`);}
+          else airwayEvent("Paciente não intubado. A saturação continua caindo — ventile com AMBU/máscara antes de tentar de novo.","bad");
+        }
+      } else {
+        if(S.apneicSince==null)S.apneicSince=S.gameTime;
+        if(!S.airwayFlags.intubarFail4){S.airwayFlags.intubarFail4=true;airwayPenalty(7,"Paciente não intubado — Cormack-Lehane IV, estrutura glótica não visível, houve piora importante da oxigenação. A saturação vai continuar caindo — ventile com AMBU/máscara entre as tentativas.");}
+        else airwayEvent("Paciente não intubado. A saturação continua caindo — ventile com AMBU/máscara antes de tentar de novo.","bad");
+      }
+    } else if(tool.id==="bougie"){
+      if(a.cormack===1||a.cormack===2||a.cormack===3){
+        S.bougiePlaced=true;
+        airwayEvent("Bougie introduzido com sucesso. Agora intube.","good");
+      } else {
+        if(S.apneicSince==null)S.apneicSince=S.gameTime;
+        if(!S.airwayFlags.bougieFail4){S.airwayFlags.bougieFail4=true;airwayPenalty(3,"Bougie não conseguiu ser guiado — Cormack-Lehane IV, estrutura glótica não visível. A saturação vai continuar caindo — ventile com AMBU/máscara entre as tentativas.");}
+        else airwayEvent("Bougie continua sem conseguir ser guiado neste cenário. A saturação continua caindo.","bad");
+      }
+    } else if(tool.id==="stylet"){
+      // Ajuda em preditores de laringoscopia difícil um pouco além do Cormack I.
+      if(a.cormack===1||a.cormack===2){
+        secureAirway("Intubação com fio-guia realizada — via aérea estabelecida, saturação melhora.");
+      } else {
+        if(S.apneicSince==null)S.apneicSince=S.gameTime;
+        if(!S.airwayFlags.styletFail){S.airwayFlags.styletFail=true;airwayPenalty(3,`Intubação com fio-guia falhou — Cormack-Lehane ${a.cormack}, via glótica não totalmente visível. A saturação vai continuar caindo — ventile com AMBU/máscara entre as tentativas.`);}
+        else airwayEvent("Fio-guia continua sem sucesso neste cenário. A saturação continua caindo.","bad");
+      }
+    }
+  } else if(tool.id==="sgd"){
+    // Gabarito: só se considera reavaliação correta se o jogador refez a laringoscopia
+    // (2ª tentativa) para confirmar que o Cormack segue ruim antes de progredir para o SGD.
+    if((S.laryngoscopyAttempts||0)>=2){
+      procedureBonus("reavaliouAntesSgd",10,"Reavaliou o Cormack-Lehane numa segunda laringoscopia antes de progredir para o dispositivo supraglótico.");
+    } else {
+      procedurePenalty("naoReavaliouAntesSgd",10,"Progrediu para o dispositivo supraglótico sem reavaliar o Cormack-Lehane numa segunda laringoscopia.");
+    }
+    if(a.sgdPossible) secureAirway("Dispositivo supraglótico (máscara laríngea) inserido — via aérea avançada estabelecida, saturação melhora (técnica não depende da visualização da glote).");
+    else{
+      if(!S.airwayFlags.sgdFail){
+        S.airwayFlags.sgdFail=true;
+        S.cicoStartTime=S.gameTime;
+        const pred=a.difficultAirwayPredictors?` Achados: ${a.difficultAirwayPredictors}.`:"";
+        airwayPenalty(4,`Dispositivo supraglótico inserido mas NÃO VENTILA — cenário de CICO (não intuba, não ventila).${pred} A saturação vai continuar caindo. Via aérea cirúrgica é necessária agora.`);
+      }
+      else airwayEvent("Ainda não ventila. A saturação continua caindo — prossiga para a via aérea cirúrgica.","bad");
+    }
+  } else if(tool.id==="crico_surgical"){
+    if(a.age<12) airwayPenalty(6,"Cricotireoidostomia cirúrgica (lâmina–bougie–tubo) não é a técnica indicada para criança <12 anos — membrana cricotireóidea muito pequena. Use a crico por punção.");
+    else secureAirway("Via aérea cirúrgica — técnica lâmina–bougie–tubo concluída, saturação melhora.");
+  } else if(tool.id==="crico_puncture"){
+    if(a.age<12) secureAirway("Crico por punção concluída — técnica correta para a via aérea pediátrica, saturação melhora.");
+    else airwayPenalty(5,"Crico por punção não é a técnica de escolha para paciente ≥12 anos. Neste jogo, a estratégia definida é lâmina–bougie–tubo.");
+  }
+  renderAirwayTools();
+}
+function renderAirwayFeedback(kind=""){
+  const el=$("#airwayFeedback"); if(!el)return;
+  el.className="airway-feedback "+kind;
+  el.textContent=S.airwayFeedback||"Selecione uma ferramenta de manejo da via aérea.";
+}
+function renderAirwayTools(){
+  const host=$("#airwayPanel"); if(!host)return;
+  const cats=[...new Set(AIRWAY_TOOLS.map(t=>t.cat))];
+  host.innerHTML=cats.map(cat=>`<div class="toolcat"><h4>${cat}</h4><div class="toolgrid">${AIRWAY_TOOLS.filter(t=>t.cat===cat).map(t=>{
+    const active=t.id==="bougie"&&S.bougiePlaced;
+    return `<button class="tool ${active?"active":""}" data-airway="${t.id}" ${S.oxygenationSecured?"disabled":""}>${t.name}</button>`;
+  }).join("")}</div></div>`).join("");
+  host.querySelectorAll("[data-airway]").forEach(b=>b.onclick=()=>applyAirwayTool(AIRWAY_TOOLS.find(t=>t.id===b.dataset.airway)));
+}
+
+function showToast(text){
+  const host=$("#toastHost");if(!host)return;
+  const el=document.createElement("div");
+  el.className="toast";el.textContent=text;
+  host.appendChild(el);
+  setTimeout(()=>{el.classList.add("fadeout");setTimeout(()=>el.remove(),400);},4200);
+}
+function applyTool(tool){
+  if(!S.running||S.applied.some(x=>x.tool.id===tool.id))return;
+  const real=(performance.now()-S.startReal)/1000;
+  const gt=effectiveGameTime(real);
+  const wasAgitated=S.states.agitated;
+  S.applied.push({tool,time:gt});
+  if(tool.removesAgitation) S.states.agitated=false;
+  if(tool.bnm && S.bnmAt==null) S.bnmAt=real;
+  S.events.push({time:gt,text:tool.name});
+  if(tool.cat==="Pré-oxigenação"&&wasAgitated){
+    S.applied.pop(); // paciente agitado recusa o dispositivo — não conta como aplicado, botão libera de novo
+    S.events.push({time:gt,text:`⚠ Paciente agitado — ${tool.name} recusado(a), sem efeito na SpO2.`});
+    showToast(`🚫 Paciente agitado não permite ${tool.name} — sem efeito na SpO2.`);
+    renderTools();renderLog();renderStates();
+    return;
+  }
+  // Penalidades de conduta/sequência (regra nova): posicionar → pré-oxigenar → sedar → via aérea.
+  if(tool.cat==="Pré-oxigenação"&&!S.applied.some(x=>x.tool.cat==="Posicionamento")){
+    procedurePenalty("preoxSemPosicionar",12,"Pré-oxigenou sem posicionar o paciente antes.");
+  }
+  if((tool.cat==="Pré-tratamento"||tool.cat==="Hipnóticos")&&!S.applied.some(x=>x.tool.cat==="Pré-oxigenação")){
+    const isDsiKetamina=wasAgitated&&(tool.id==="keta_low"||tool.id==="keta2");
+    if(isDsiKetamina){
+      procedureBonus("dsiCorreto",10,"Sedação em sequência atrasada com cetamina — técnica correta para permitir a pré-oxigenação em paciente agitado/não colaborativo, preservando o drive respiratório.");
+    } else {
+      procedurePenalty("sedouSemPreoxigenar",12,"Sedou o paciente sem pré-oxigenar antes.");
+    }
+  }
+  applyGabarito(tool);
+  renderTools();renderLog();renderStates();
+}
+// "Gabarito" de condutas assertivas (regra nova, definida pelo usuário — não vem da
+// planilha). Cada item pontua uma vez por partida, positiva ou negativamente.
+function applyGabarito(tool){
+  if(tool.cat==="Posicionamento"){
+    const age=S.airway.age,obesePreg=S.states.obese||S.states.pregnant;
+    const required=getRequiredPositioning(age,obesePreg);
+    if(required.includes(tool.id)){
+      if(required.every(id=>S.applied.some(x=>x.tool.id===id)))
+        procedureBonus("posCorreto",8,"Posicionamento correto para o perfil deste paciente.");
+    } else if(tool.id==="pos_rampa"&&!obesePreg){
+      // Rampa fora de obesos/gestantes: neutra, não é a ideal mas também não é erro.
+    } else {
+      procedurePenalty("posErrado",10,"Posicionamento incorreto para o perfil deste paciente.");
+    }
+  }
+  if(tool.id==="mnr"){
+    const{rr}=hemoStateNow(tool.id);
+    if(rr<=1)procedurePenalty("mnrApneico",10,"MNR não é eficaz em paciente apneico — use ventilação com AMBU para pré-oxigenar.");
+    else if(S.states.agitated){/* agitação é variável oculta — descobrir tentando não penaliza */}
+    else if(!S.states.obese)procedureBonus("mnrCorreto",8,"MNR é o dispositivo de alto fluxo adequado para paciente respirando espontaneamente.");
+  }
+  if(tool.id==="cpap"&&S.states.obese){
+    procedureBonus("cpapObesoCorreto",8,"CPAP é a melhor estratégia de pré-oxigenação em paciente obeso — recruta e evita atelectasia, permitindo alcançar SpO2 de 100%.");
+  }
+  if(tool.id==="ambu"){
+    const{rr}=hemoStateNow(tool.id);
+    if(rr<=1)procedureBonus("ambuApneico",8,"Ventilação com AMBU é a escolha certa para pré-oxigenar um paciente apneico.");
+  }
+  if(tool.id==="cnaf"){
+    const wasMnr=S.applied.some(x=>x.tool.id==="mnr");
+    const{hipoxemico}=hemoStateNow(tool.id);
+    if(wasMnr&&hipoxemico)procedureBonus("cnafCorreto",8,"Escalonou corretamente para CNAF diante de hipoxemia refratária à MNR.");
+  }
+  if(tool.cat==="Pré-tratamento"||tool.cat==="Hipnóticos"){
+    const usedMnr=S.applied.some(x=>x.tool.id==="mnr"),usedCnaf=S.applied.some(x=>x.tool.id==="cnaf");
+    const{hipoxemico}=hemoStateNow(tool.id);
+    if(usedMnr&&!usedCnaf&&hipoxemico)procedurePenalty("naoEscalonouCnaf",8,"Manteve-se hipoxêmico (SpO2<92%) apesar da MNR e não escalonou para CNAF.");
+  }
+  if(["metaraminol","efedrina","adrenalina"].includes(tool.id)){
+    const{hipotenso,bradicardico,taquicardico}=hemoStateNow(tool.id);
+    if(tool.id==="efedrina"||tool.id==="adrenalina"){
+      if(hipotenso&&bradicardico)procedureBonus("vasopressorCerto1",8,`${tool.name} é adequado(a) para hipotensão com bradicardia.`);
+      else if(hipotenso&&taquicardico)procedurePenalty("vasopressorErrado1",8,`${tool.name} pode piorar a taquicardia em paciente hipotenso taquicárdico — considere metaraminol.`);
+    } else {
+      if(hipotenso&&taquicardico)procedureBonus("vasopressorCerto2",8,"Metaraminol é adequado para hipotensão com taquicardia.");
+      else if(hipotenso&&bradicardico)procedurePenalty("vasopressorErrado2",8,"Metaraminol pode piorar a bradicardia em paciente hipotenso bradicárdico — considere efedrina/adrenalina.");
+    }
+  }
+  if(["alfentanil","fenta1","fenta2","suf01","suf02"].includes(tool.id)){
+    const{hipotenso,bradicardico}=hemoStateNow(tool.id);
+    if(hipotenso&&bradicardico)procedurePenalty("opioidHipotensoBradi",8,`${tool.name} pode ser dispensável em paciente hipotenso e bradicárdico — aqui a própria resposta simpática da laringoscopia ajuda a manter FC/PA, e o opioide pode piorar as duas.`);
+    else if(hipotenso)procedurePenalty("opioidHipotenso",8,`${tool.name} deve ser evitado em paciente hipotenso — considere cetamina 0,2mg/kg.`);
+    else procedureBonus("analgesiaPreLaringo",6,`${tool.name} antes da laringoscopia ajuda a atenuar a resposta hemodinâmica ao estímulo.`);
+  }
+  if(["lido_iv","lido_spray"].includes(tool.id)){
+    const{hipotenso,bradicardico}=hemoStateNow(tool.id);
+    if(!(hipotenso&&bradicardico))procedureBonus("analgesiaLidoPreLaringo",6,`${tool.name} antes da laringoscopia ajuda a atenuar a resposta hemodinâmica ao estímulo.`);
+  }
+  if(tool.id==="keta_low"){
+    const{hipotenso}=hemoStateNow(tool.id);
+    if(hipotenso)procedureBonus("ketaLowCerto",8,"Cetamina 0,2mg/kg é o analgésico preferencial em paciente hipotenso.");
+  }
+  if(["prop1","prop2","mid03","keta2","etomidato","mid02"].includes(tool.id)){
+    const{hipotenso}=hemoStateNow(tool.id);
+    if(hipotenso){
+      if(tool.id==="prop1"||tool.id==="prop2")procedurePenalty("propofolHipotenso",10,`${tool.name} deve ser evitado em paciente hipotenso.`);
+      else if(tool.id==="mid03")procedurePenalty("midHighHipotenso",10,"Midazolam em dose alta (0,3mg/kg) deve ser evitado em paciente hipotenso.");
+      else procedureBonus("hipnoticoCerto",8,`${tool.name} é uma escolha adequada de hipnótico em paciente hipotenso.`);
+    }
+  }
+  if(tool.id==="sux"&&S.states.renalFailure){
+    procedurePenalty("suxRenal",12,"Succinilcolina é contraindicada em suspeita de hipercalemia (insuficiência renal) — risco de parada por hipercalemia.");
+  }
+}
+function procedurePenalty(flag,points,text){
+  if(!S.procedureFlags)S.procedureFlags={};
+  if(S.procedureFlags[flag])return;
+  S.procedureFlags[flag]=true;
+  if(S.conductScore==null)S.conductScore=100;
+  S.conductScore=clamp(S.conductScore-points,0,100);
+  recomputeScore();
+  S.events.push({time:S.gameTime||0,text:`⚠ Conduta: ${text} (−${points} no score)`});
+  renderLog();
+}
+function procedureBonus(flag,points,text){
+  if(!S.procedureFlags)S.procedureFlags={};
+  if(S.procedureFlags[flag])return;
+  S.procedureFlags[flag]=true;
+  if(S.conductScore==null)S.conductScore=100;
+  S.conductScore=clamp(S.conductScore+points,0,100);
+  recomputeScore();
+  S.events.push({time:S.gameTime||0,text:`✓ Conduta: ${text} (+${points} no score)`});
+  renderLog();
+}
+// Estado hemodinâmico "no momento" para o gabarito de pré-tratamento/hipnóticos —
+// reaproveita as mesmas faixas normais por idade já usadas no score de estabilidade.
+function hemoStateNow(excludeToolId){
+  const gt=S.gameTime||0;
+  const saved=S.applied;
+  if(excludeToolId)S.applied=S.applied.filter(x=>x.tool.id!==excludeToolId);
+  const v=calculateVitals(gt);
+  S.applied=saved;
+  const age=S.airway?S.airway.age:30;
+  const[hlo,hhi]=hrNormalRange(age);
+  const[plo]=pasNormalRange(age);
+  return{
+    hipotenso:v.pas<plo,
+    bradicardico:v.hr<hlo,
+    taquicardico:v.hr>hhi,
+    hipoxemico:v.spo2<92,
+    rr:v.rr,
+    v
+  };
+}
+function updateStats(v){
+  S.min.spo2=Math.min(S.min.spo2,v.spo2);S.min.pas=Math.min(S.min.pas,v.pas);S.min.map=Math.min(S.min.map,v.map);S.min.hr=Math.min(S.min.hr,v.hr);S.max.hr=Math.max(S.max.hr,v.hr);S.min.rr=Math.min(S.min.rr,v.rr);
+}
+function tick(){
+  if(!S.running)return;
+  const real=(performance.now()-S.startReal)/1000;
+  S.gameTime=effectiveGameTime(real);
+  const v=calculateVitals(S.gameTime);S.lastVitals=v;updateStats(v);renderVitals(v);
+  const scoreDt=S.gameTime-(S.lastScoreTime==null?S.gameTime:S.lastScoreTime);S.lastScoreTime=S.gameTime;
+  updateScore(scoreDt,v,S.airway.age);
+  renderScoreBadge("#scoreBadge");
+  $("#timer").textContent=fmtTime(120-S.gameTime);
+  const cutoff=LEVELS[S.level].cutoff;
+  const hemo=hemoCutoffs(S.airway.age,S.level);
+  const HEMO_SUSTAIN_S=20; // PCR hemodinâmica exige o critério sustentado, não uma leitura isolada
+  const GRACE_S=20; // janela inicial sem checagem de PCR — tempo para o jogador ler o caso e pensar antes de qualquer critério começar a valer
+  const hemoApplies=!(S.case.pas===0&&S.case.hr===0); // Leito 10 já nasce com PAS/FC=0 por desenho — fórmula multiplicativa nunca sai de 0, então fica só no critério de SpO2
+  if(hemoApplies&&S.gameTime>=GRACE_S){
+    if(v.hr<=hemo.hr){if(S.hrCritSince==null)S.hrCritSince=S.gameTime;}else S.hrCritSince=null;
+    if(v.pas<=hemo.pas){if(S.pasCritSince==null)S.pasCritSince=S.gameTime;}else S.pasCritSince=null;
+  }
+  updateWarningBanner("#warning",v,cutoff,hemo,hemoApplies);
+  if(S.gameTime>=GRACE_S&&v.spo2<=cutoff){S.pcrCause="SpO₂";finish("pcr");return}
+  if(hemoApplies&&S.hrCritSince!=null&&S.gameTime-S.hrCritSince>=HEMO_SUSTAIN_S){S.pcrCause="bradicardia crítica sustentada";finish("pcr");return}
+  if(hemoApplies&&S.pasCritSince!=null&&S.gameTime-S.pasCritSince>=HEMO_SUSTAIN_S){S.pcrCause="hipotensão crítica sustentada";finish("pcr");return}
+  if(S.gameTime>=120){finish("complete");return}
+  S.raf=requestAnimationFrame(tick);
+}
+function finish(reason){
+  S.running=false;cancelAnimationFrame(S.raf);
+  const v=S.lastVitals||calculateVitals(S.gameTime);
+  S.events.push({time:S.gameTime,text:reason==="pcr"?`PCR / GAME OVER (${S.pcrCause||"SpO₂"})`:"Simulação concluída"});
+  renderLog();
+  $("#monitorState").textContent=reason==="pcr"?"PCR":"ENCERRADO";
+  $("#modalTitle").textContent=reason==="pcr"?"🚨 GAME OVER":"SIMULAÇÃO CONCLUÍDA";
+  $("#modalTitle").className=reason==="pcr"?"red":"green";
+  $("#modalText").textContent=reason==="pcr"?`Paciente evoluiu para PCR — critério: ${S.pcrCause||"SpO₂"}.`:"O paciente não atingiu nenhum critério de PCR durante os 2 minutos.";
+  const scoreFinal=Math.round(S.score==null?100:S.score);
+  const stabFinal=Math.round(S.stabilityScore==null?100:S.stabilityScore);
+  const condFinal=Math.round(S.conductScore==null?100:S.conductScore);
+  const data=[["Score final",`${scoreFinal}% — ${scoreLabel(scoreFinal)}`],["↳ Estabilidade hemodinâmica",`${stabFinal}%`],["↳ Condutas",`${condFinal}%`],["SpO₂ final",`${v.spo2.toFixed(0)}%`],["PA final",`${v.pas.toFixed(0)}/${v.pad.toFixed(0)}`],["PAM final",v.map.toFixed(0)],["FC final",v.hr.toFixed(0)],["FR final",v.rr.toFixed(0)],["Menor SpO₂",`${S.min.spo2.toFixed(0)}%`],["Menor PAS",S.min.pas.toFixed(0)],["Menor PAM",S.min.map.toFixed(0)],["Tempo",fmtTime(S.gameTime)],["Via aérea",S.oxygenationSecured?"Estabelecida":"Não estabelecida"]];
+  $("#resultGrid").innerHTML=data.map(([a,b])=>`<div class="result"><span>${a}</span><b>${b}</b></div>`).join("");
+  $("#debriefing").innerHTML=buildDebriefing();
+  $("#modalLog").innerHTML=`<h3>Intervenções</h3><div style="max-height:140px;overflow:auto">${S.events.map(e=>`<div class="event"><time>${fmtTime(e.time)}</time><span>${e.text}</span></div>`).join("")}</div>`;
+  $("#toPhase3").classList.toggle("hidden", !(reason==="complete" && S.oxygenationSecured));
+  $("#modal").classList.remove("hidden");
+}
+function startGame(){
+  S.student={name:$("#studentName").value.trim(),date:$("#studentDate").value,city:$("#studentCity").value.trim()};
+  S.level=$("#level").value;S.case=CASES.find(c=>c.id===$("#caseSelect").value);
+  S.running=true;S.startReal=performance.now();S.gameTime=0;S.bnmAt=null;S.applied=[];S.events=[{time:0,text:"Início da simulação"}];S.states={...S.case.states};
+  S.min={spo2:999,pas:999,map:999,hr:999,rr:999};S.max={hr:-1};S.lastVitals=null;
+  S.airway={...AIRWAY_CASES[S.case.id]};S.airwayPenalty=0;S.airwayBoost=0;S.airwayFlags={};S.cormackRevealed=false;S.bougiePlaced=false;S.laryngoscopyStimulus=false;S.cicoStartTime=null;S.apneicSince=null;S.oxygenationSecured=false;S.airwayFeedback="";S.pcrCause=null;S.hrCritSince=null;S.pasCritSince=null;S.score=null;S.stabilityScore=null;S.conductScore=null;S.minScore=null;S.lastScoreTime=null;S.procedureFlags={};S.laryngoscopyAttempts=0;S.firstLaryngoscopyTool=null;
+  $("#setup").style.display="none";$("#game").style.display="block";$("#modal").classList.add("hidden");
+  $("#gameTitle").textContent=S.case.name;$("#gameMeta").textContent=`${LEVELS[S.level].name} • cutoff PCR: SpO₂ ≤ ${LEVELS[S.level].cutoff}% • ${S.case.weight?S.case.weight+" kg":"peso não informado"}`;
+  $("#sideCase").textContent=S.case.name;$("#sideDesc").textContent=S.case.description;$("#monitorState").textContent="EM SIMULAÇÃO";
+  renderTools();renderAirwayTools();renderAirwayFeedback();renderLog();renderStates();drawWaves();tick();
+}
+function resetToSetup(){S.running=false;cancelAnimationFrame(S.raf);$("#modal").classList.add("hidden");$("#game").style.display="none";$("#setup").style.display="block";renderPreview()}
+function renderPreview(){
+  const c=CASES.find(x=>x.id===$("#caseSelect").value);
+  $("#casePreview").innerHTML=`<h3>${c.name}</h3><p>${c.description}</p><div class="vitals-preview"><span class="chip">SpO₂ ${c.spo2}%</span><span class="chip">PA ${c.pas}/${c.pad}</span><span class="chip">FC ${c.hr}</span><span class="chip">FR ${c.rr}</span>${c.weight?`<span class="chip">${c.weight} kg</span>`:""}</div>`;
+}
+function renderStates(){
+  const map={fullStomach:"Estômago cheio",agitated:"Agitado",shock:"Choque",bronchospasm:"Broncoespasmo",difficultAirway:"Via aérea difícil",obese:"Obeso",pregnant:"Gestante",renalFailure:"Insuficiência renal"};
+  $("#stateChips").innerHTML=Object.entries(S.states).filter(x=>x[1]).map(([k])=>`<span class="chip">${map[k]}</span>`).join("")||'<span class="chip">Sem flags especiais ativas</span>';
+}
+function renderTools(){
+  const cats=[...new Set(TOOLS.map(t=>t.cat))];
+  $("#toolPanel").innerHTML=cats.map(cat=>`<div class="toolcat"><h4>${cat}</h4><div class="toolgrid">${TOOLS.filter(t=>t.cat===cat).map(t=>{
+    const active=S.applied.some(x=>x.tool.id===t.id);return `<button class="tool ${t.bnm?"bnm":""} ${active?"active":""}" data-tool="${t.id}" ${active?"disabled":""}>${t.name}</button>`
+  }).join("")}</div></div>`).join("");
+  document.querySelectorAll("[data-tool]").forEach(b=>b.onclick=()=>applyTool(TOOLS.find(t=>t.id===b.dataset.tool)));
+}
+function renderLog(){$("#eventLog").innerHTML=S.events.slice().reverse().map(e=>`<div class="event"><time>${fmtTime(e.time)}</time><span>${e.text}</span></div>`).join("")}
+function renderScoreBadge(sel){
+  const el=$(sel);if(!el||S.score==null)return;
+  const s=Math.round(S.score);
+  const prev=el.dataset.prevScore?Number(el.dataset.prevScore):s;
+  el.textContent=`SCORE ${s}%`;
+  el.className="score-badge-lg "+(s>=90?"good":s>=75?"ok":s>=50?"warn":"bad");
+  if(s!==prev){
+    el.classList.add("flash");
+    setTimeout(()=>el.classList.remove("flash"),500);
+  }
+  el.dataset.prevScore=s;
+}
+function renderVitals(v){
+  $("#spo2").textContent=v.spo2.toFixed(0);$("#hr").textContent=v.hr.toFixed(0);$("#rr").textContent=v.rr.toFixed(0);$("#bp").textContent=`${v.pas.toFixed(0)}/${v.pad.toFixed(0)}`;$("#map").textContent=v.map.toFixed(0);
+  $("#spo2").className="value "+(v.spo2<=LEVELS[S.level].cutoff+5?"red":"cyan");
+}
+function drawWaves(){
+  document.querySelectorAll("canvas.wave").forEach((c,idx)=>{
+    const dpr=devicePixelRatio||1,rect=c.getBoundingClientRect();c.width=rect.width*dpr;c.height=rect.height*dpr;
+    const x=c.getContext("2d");x.scale(dpr,dpr);x.clearRect(0,0,rect.width,rect.height);x.lineWidth=1.5;
+    const type=c.dataset.wave;x.strokeStyle=type==="spo2"?"#53d8ff":(type==="pa"||type==="pam"?"#ffe66d":"#52ff8f");x.beginPath();
+    for(let px=0;px<rect.width;px++){
+      const phase=(px/rect.width)*8*Math.PI;let y=rect.height/2;
+      if(type==="ecg"){const z=(px%85)/85;y=rect.height/2+(z<.12?-Math.sin(z/.12*Math.PI)*8:z<.18?Math.sin((z-.12)/.06*Math.PI)*26:z<.28?-Math.sin((z-.18)/.10*Math.PI)*10:0)}
+      else if(type==="spo2") y=rect.height/2-Math.sin(phase)*10-Math.max(0,Math.sin(phase))*5;
+      else if(type==="rr") y=rect.height/2-Math.sin(phase/2)*13;
+      else y=rect.height/2-Math.sin(phase)*7;
+      px?x.lineTo(px,y):x.moveTo(px,y)
+    }x.stroke()
+  })
+}
+/* =========================================================================
+   FASE 3 — VENTILAÇÃO MECÂNICA
+   Física portada de script-simulador.js (SAVeM), sem eval(), com o bug de
+   indexação dos presets de doença corrigido (par[id-1], confirmado com o usuário).
+   A ponte "ventilador → SpO2/FC/PA" é uma regra NOVA desta fase (não vem da
+   planilha original nem do SAVeM), documentada abaixo.
+   ========================================================================= */
+function pushBuf(arr,val,len){arr.push(val);if(arr.length>len)arr.shift();}
+
+function ventTick(dt){
+  const v=S.vent,P=v.params,R=v.r,C=v.c;
+  v.xVal+=dt;
+  const intervalo=P.Frequencia>0?60/P.Frequencia:Infinity;
+  const interPac=(v.pmus>0&&v.fpac>0)?60/v.fpac:Infinity;
+
+  if(v.mode==="VCV"){
+    if(v.momento===1){
+      const form=P.flowForm;
+      const deltaT=(P.Volume*120)/((P.Fluxo*form+P.Fluxo)*1000);
+      v.yFlux=((P.Fluxo*form-P.Fluxo)/deltaT)*(v.xVal-v.start)+P.Fluxo;
+      if(v.xVal-v.start>=deltaT){
+        if(P.pausaInsp>0){v.momento=2;v.start=v.xVal;v.yFlux=0;}
+        else{v.momento=0;v.VolMax=v.VolTrans;v.VolTrans=0;v.start=v.xVal;v.yFlux=(-v.yVol*60)/(C*R);}
+      }
+    } else if(v.momento===2){
+      v.yFlux=0;
+      if(v.xVal-v.start>=P.pausaInsp){v.momento=0;v.VolMax=v.VolTrans;v.VolTrans=0;v.start=v.xVal;v.yFlux=(-v.yVol*60)/(C*R);}
+    } else {
+      v.yFlux=(-v.yVol*60)/(C*R);
+      if(Math.abs(v.yFlux)<0.1)v.yFlux=0;
+      if(v.xVal-v.lastBreath>=Math.min(intervalo,interPac)){v.yFlux=P.Fluxo;v.lastBreath=v.xVal;v.start=v.xVal;v.momento=1;}
+    }
+    v.yPress=(R*v.yFlux)/60+v.yVol/C+P.PEEP;
+  } else if(v.mode==="PCV"){
+    if(v.momento===2){
+      v.yFlux=(v.yPress-P.PEEP-v.yVol/C)/(R/60);
+      if(v.xVal-v.start>=P.tInsp){v.momento=0;v.VolMax=v.VolTrans;v.VolTrans=0;v.yPress=P.PEEP;v.start=v.xVal;v.yFlux=(-v.yVol*60)/(C*R);}
+    } else if(v.momento===1){
+      v.yPress=(P.Pressao/P.tSubidaP)*(v.xVal-v.start)+P.PEEP;
+      if(v.xVal-v.start>=P.tSubidaP){v.momento=2;v.yPress=P.Pressao+P.PEEP;v.start=v.xVal;}
+      v.yFlux=(v.yPress-P.PEEP-v.yVol/C)/(R/60);
+    } else {
+      v.yFlux=(-v.yVol*60)/(C*R);
+      if(Math.abs(v.yFlux)<0.1)v.yFlux=0;
+      if(v.xVal-v.lastBreath>=Math.min(intervalo,interPac)){v.lastBreath=v.xVal;v.start=v.xVal;v.momento=1;}
+    }
+  } else { // PSV/CPAP — inteiramente disparado pelo esforço do paciente (ver bloco de esforço abaixo)
+    if(v.momento===2){
+      v.yFlux=(v.yPress-P.PEEP-v.yVol/C)/(R/60);
+      if(v.maxFluxo>0 && v.yFlux/v.maxFluxo<0.25){
+        v.momento=0;v.VolMax=v.VolTrans;v.VolTrans=0;v.yPress=P.PEEP;v.start=v.xVal;v.yFlux=(-v.yVol*60)/(C*R);
+      }
+    } else if(v.momento===1){
+      v.yPress=(P.PS/P.tSubida)*(v.xVal-v.start)+P.PEEP;
+      if(v.xVal-v.start>=P.tSubida){
+        v.momento=2;v.yPress=P.PS+P.PEEP;v.yFlux=(v.yPress-P.PEEP-v.yVol/C)/(R/60);v.maxFluxo=v.yFlux;v.start=v.xVal;
+      }
+      v.yFlux=(v.yPress-P.PEEP-v.yVol/C)/(R/60);
+    } else {
+      v.yFlux=(-v.yVol*60)/(C*R);
+      if(Math.abs(v.yFlux)<0.1)v.yFlux=0;
+    }
+  }
+
+  // Esforço espontâneo do paciente (comum aos 3 modos) — dispara um ciclo quando a
+  // sensibilidade configurada (pressão ou fluxo) é atingida. Fiel ao script-simulador.js.
+  if(v.pmus>0&&v.fpac>0){
+    if(v.momentoPac===1){
+      v.yPmus=((-4*v.pmus)/v.durPac)*(v.xVal-v.startPac)+((4*v.pmus)/(v.durPac*v.durPac))*(v.xVal-v.startPac)*(v.xVal-v.startPac);
+      if(v.xVal-v.startPac>v.durPac){v.momentoPac=0;v.yPmus=0;}
+    } else {
+      if(v.xVal-v.lastPac>=interPac){v.startPac=v.xVal;v.lastPac+=interPac;v.momentoPac=1;}
+    }
+    if(v.momento===0){
+      v.yPress=v.yPmus+P.PEEP;
+      const deltaFlux=v.yPmus/(R/60);
+      v.yFlux=v.yFlux-deltaFlux;
+      const triggerMet=P.sensType==="pressao"?Math.abs(v.yPmus)>=P.sensValue:Math.abs(deltaFlux)>=P.sensValue;
+      if(triggerMet){
+        v.lastBreath=v.xVal;v.start=v.xVal;v.momento=1;v.VolTrans=0;
+        if(v.mode==="VCV")v.yFlux=P.Fluxo; else v.yPress=P.PEEP;
+      }
+    }
+  }
+
+  v.yVol+=((v.yFlux*1000)/60)*dt;
+  if(v.yVol>v.VolTrans)v.VolTrans=v.yVol;
+  if(Math.abs(v.yVol)<1.5)v.yVol=0;
+  v.plato=v.VolTrans/C+P.PEEP;
+  v.volmin=(v.VolTrans/1000)*(v.mode==="PSV"?(v.fpac||0):P.Frequencia);
+  if(v.yPress>v.peakThisBreath||v.momento===0)v.peakThisBreath=v.momento===0?0:Math.max(v.peakThisBreath,v.yPress);
+  pushBuf(v.buffers.vol,v.yVol,v.bufLen);
+  pushBuf(v.buffers.flux,v.yFlux,v.bufLen);
+  pushBuf(v.buffers.press,v.yPress,v.bufLen);
+}
+
+// ---- Física real usada na Fase 3 (fórmulas publicadas, não inventadas): ----
+// Severinghaus (1979): aproximação da curva de dissociação da oxihemoglobina.
+function severinghaus(pao2){
+  const p3=Math.pow(pao2,3);
+  return 100/((23400/(p3+150*pao2))+1);
+}
+// Henderson-Hasselbalch com HCO3 fixo em 24 (sem tempo para compensação renal nesta simulação).
+function hendersonHasselbalch(paco2,hco3){
+  return 6.1+Math.log10(hco3/(0.03*paco2));
+}
+function computeGasExchange(){
+  const v=S.vent,preset=VENT_PRESETS[CASE_VENT_PRESET[S.case.id]-1],refW=S.case.weight||70;
+  const connected=v.active&&!v.alarms.apneia;
+  const fio2Frac=connected?v.params.FIO2/100:0.21;
+  const peepDiff=Math.abs((connected?v.params.PEEP:0)-preset.idealPeep);
+  const peepFactor=connected?(1-Math.min(1,peepDiff/10)*0.6):0.5;
+  const pf=preset.pf*peepFactor;
+  const pao2=clamp(pf*fio2Frac,30,600);
+  const targetVE=0.1*refW; // ~100 mL/kg/min de ventilação-minuto alvo
+  const actualVE=connected?Math.max(0.3,v.volmin):0.3;
+  const paco2=clamp(40*(targetVE/actualVE),15,120);
+  const hco3=24;
+  const ph=hendersonHasselbalch(paco2,hco3);
+  const spo2=severinghaus(pao2);
+  return{pao2,paco2,ph,hco3,spo2};
+}
+
+// Regra nova (Fase 3): a SpO2 do monitor é derivada da PaO2 (Severinghaus) e da
+// ventilação-minuto (para PaCO2/pH), ligadas ao FiO2/PEEP do ventilador e à
+// gravidade (relação P/F) do preset de mecânica. Desconexão faz a FiO2 efetiva
+// cair para o ar ambiente (21%). Nada disto vem da planilha original.
+function ventUpdateSpo2(dt){
+  const v=S.vent;
+  const gas=computeGasExchange();
+  let target=v.started?gas.spo2:v.spo2;
+  const k=target<v.spo2?0.18:0.35;
+  v.spo2=clamp(v.spo2+(target-v.spo2)*Math.min(1,k*dt),0,100);
+  const hemoStrain=Math.max(0,v.yPress-25)*0.4;
+  const hrTarget=v.baseHr+Math.max(0,90-v.spo2)*1.5;
+  v.hr=clamp(v.hr+(hrTarget-v.hr)*Math.min(1,0.5*dt),30,200);
+  const pasTarget=v.basePas-Math.max(0,85-v.spo2)*1.0-hemoStrain*3;
+  v.pas=clamp(v.pas+(pasTarget-v.pas)*Math.min(1,0.5*dt),40,200);
+  const padTarget=v.basePad-hemoStrain*2;
+  v.pad=clamp(v.pad+(padTarget-v.pad)*Math.min(1,0.5*dt),20,130);
+}
+
+function v3Log(text){S.vent.events.push({t:S.vent.elapsed,text});renderV3Log();}
+function renderV3Log(){$("#v3EventLog").innerHTML=S.vent.events.slice().reverse().map(e=>`<div class="event"><time>${fmtTime(e.t)}</time><span>${e.text}</span></div>`).join("");}
+
+function renderVentAlarms(){
+  const a=S.vent.alarms;
+  const items=[["vc","Volume corrente fora da faixa"],["pplato","Pressão de platô alta (>30)"],["paw","Pressão de pico alta (>40)"],["apneia","Sem ventilação — dessaturando"]];
+  $("#v3Alarms").innerHTML=items.map(([k,label])=>`<span class="vent-alarm ${a[k]?"on":""}">${label}</span>`).join("");
+}
+function renderV3Vitals(){
+  const v=S.vent;
+  $("#v3hr").textContent=v.hr.toFixed(0);
+  $("#v3spo2").textContent=v.spo2.toFixed(0);
+  $("#v3spo2").className="value "+(v.spo2<=LEVELS[S.level].cutoff+5?"red":"cyan");
+  $("#v3bp").textContent=`${v.pas.toFixed(0)}/${v.pad.toFixed(0)}`;
+  $("#v3vol").textContent=v.VolTrans.toFixed(0)+" mL";
+  $("#v3flux").textContent=v.yFlux.toFixed(0)+" L/min";
+  $("#v3press").textContent=v.yPress.toFixed(1)+" cmH₂O";
+  renderV3Readouts();renderMechPanel();
+}
+// "mostradores()" do SAVeM: Ti, Te, Ppico, VCe, relação I:E — por modo.
+function renderV3Readouts(){
+  const v=S.vent,P=v.params;
+  let ti,te,freqEfetiva;
+  if(v.mode==="VCV"){ti=(P.Volume*120)/((P.Fluxo*(P.flowForm)+P.Fluxo)*1000)+P.pausaInsp;freqEfetiva=P.Frequencia;}
+  else if(v.mode==="PCV"){ti=P.tInsp+P.tSubidaP;freqEfetiva=P.Frequencia;}
+  else{ti=P.tSubida;freqEfetiva=v.fpac||0;}
+  te=freqEfetiva>0?60/freqEfetiva-ti:0;
+  const ie=ti>0?(te/ti).toFixed(1):"—";
+  $("#v3Readouts").innerHTML=`
+    <div>Ti <b>${ti.toFixed(2)}s</b></div>
+    <div>Te <b>${Math.max(0,te).toFixed(2)}s</b></div>
+    <div>I:E <b>1:${ie}</b></div>
+    <div>Pico <b>${v.yPress.toFixed(1)}</b></div>
+    <div>Platô <b>${v.plato.toFixed(1)}</b></div>
+    <div>VMin <b>${v.volmin.toFixed(1)} L/min</b></div>`;
+}
+// Mecânica "medida" a partir das curvas (o preset real do paciente fica oculto do jogador).
+function renderMechPanel(){
+  const v=S.vent;
+  const drivingP=Math.max(0,v.plato-v.params.PEEP);
+  const cstat=drivingP>0.5?(v.VolTrans/drivingP).toFixed(0):"—";
+  const cdyn=(v.yPress-v.params.PEEP)>0.5?(v.VolTrans/(v.yPress-v.params.PEEP)).toFixed(0):"—";
+  const inspFlowLs=(v.params.Fluxo||30)/60;
+  const resistCalc=inspFlowLs>0?((v.yPress-v.plato)/inspFlowLs).toFixed(1):"—";
+  $("#v3Mech").innerHTML=`<span class="chip">Cstat ≈ ${cstat} mL/cmH₂O</span><span class="chip">Cdyn ≈ ${cdyn} mL/cmH₂O</span><span class="chip">Resistência ≈ ${resistCalc} cmH₂O·s/L</span><span class="chip">Driving pressure ${drivingP.toFixed(1)} cmH₂O</span>`;
+}
+function drawGaso(){
+  const gas=computeGasExchange();
+  const phLabel=gas.ph<7.35?"acidose":gas.ph>7.45?"alcalose":"normal";
+  const co2Label=gas.paco2>45?"retenção de CO₂":gas.paco2<35?"hiperventilação":"normal";
+  const o2Label=gas.pao2<60?"hipoxemia":"normal";
+  $("#v3Gaso").innerHTML=`<span class="chip">pH ${gas.ph.toFixed(2)} (${phLabel})</span><span class="chip">PaO₂ ${gas.pao2.toFixed(0)} mmHg (${o2Label})</span><span class="chip">PaCO₂ ${gas.paco2.toFixed(0)} mmHg (${co2Label})</span><span class="chip">HCO₃⁻ ${gas.hco3} mEq/L</span><span class="chip">SpO₂ calc. ${gas.spo2.toFixed(0)}%</span>`;
+  v3Log(`Gasometria colhida: pH ${gas.ph.toFixed(2)}, PaO₂ ${gas.pao2.toFixed(0)}, PaCO₂ ${gas.paco2.toFixed(0)}.`);
+}
+function drawVentWaves(){
+  const map={vol:["#53d8ff",-50,900],flux:["#ffe66d",-80,80],press:["#52ff8f",-2,40]};
+  document.querySelectorAll("canvas.ventwave").forEach(c=>{
+    const key=c.dataset.vwave,[color,lo,hi]=map[key],buf=S.vent.buffers[key];
+    const dpr=devicePixelRatio||1,rect=c.getBoundingClientRect();
+    if(!rect.width)return;
+    c.width=rect.width*dpr;c.height=rect.height*dpr;
+    const x=c.getContext("2d");x.scale(dpr,dpr);x.clearRect(0,0,rect.width,rect.height);
+    x.strokeStyle=color;x.lineWidth=1.5;x.beginPath();
+    const n=buf.length;
+    buf.forEach((val,i)=>{
+      const px=(i/Math.max(1,S.vent.bufLen-1))*rect.width;
+      const py=rect.height-((clamp(val,lo,hi)-lo)/(hi-lo))*rect.height;
+      i?x.lineTo(px,py):x.moveTo(px,py);
+    });
+    x.stroke();
+  });
+}
+
+function startPhase3(){
+  const preset=VENT_PRESETS[CASE_VENT_PRESET[S.case.id]-1];
+  const refW=S.case.weight||70;
+  const seed=S.lastVitals||{spo2:96,hr:90,pas:110,pad:70};
+  const startVolume=Math.round((6*refW)/10)*10;
+  S.vent={
+    active:false,started:false,mode:"VCV",
+    params:{Volume:startVolume,Frequencia:14,Fluxo:40,flowForm:1,pausaInsp:0,
+      Pressao:15,tInsp:1,tSubidaP:0.1,
+      PS:10,tSubida:0.1,
+      PEEP:preset.idealPeep,FIO2:60,sensType:"pressao",sensValue:2},
+    momento:0,start:0,xVal:0,lastBreath:0,maxFluxo:0,peakThisBreath:0,hrCritSince:null,pasCritSince:null,
+    momentoPac:0,startPac:0,lastPac:0,yPmus:0,
+    yVol:0,yFlux:0,yPress:preset.idealPeep,VolTrans:0,VolMax:0,plato:0,volmin:0,
+    r:preset.r,c:preset.c,pmus:preset.pmus,fpac:preset.fpac,durPac:preset.durPac||0.5,
+    buffers:{vol:[],flux:[],press:[]},bufLen:150,
+    spo2:seed.spo2,hr:seed.hr,pas:seed.pas,pad:seed.pad,
+    baseHr:seed.hr,basePas:seed.pas,basePad:seed.pad,
+    alarms:{vc:false,pplato:false,paw:false,apneia:false},
+    events:[{t:0,text:"Via aérea estabelecida — configure o ventilador."}],
+    elapsed:0
+  };
+  $("#game").style.display="none";$("#modal").classList.add("hidden");
+  $("#phase3").style.display="block";
+  $("#v3Case").textContent=S.case.name;$("#v3Desc").textContent=S.case.description;
+  $("#v3Meta").textContent=`${LEVELS[S.level].name} • cutoff PCR: SpO₂ ≤ ${LEVELS[S.level].cutoff}%`;
+  $("#v3PatientInfo").innerHTML=`<span class="chip">Peso ${refW} kg</span><span class="chip">Esforço espontâneo: ${preset.pmus>0?"presente":"ausente/sedado"}</span>`;
+  $("#v3Gaso").innerHTML=`<span class="chip">Ainda não colhida</span>`;
+  $("#v3Mode").value="VCV";$("#v3ParamsVCV").style.display="block";$("#v3ParamsPCV").style.display="none";$("#v3ParamsPSV").style.display="none";
+  syncVentInputs();
+  $("#v3PlayPause").textContent="▶ INICIAR VENTILAÇÃO";$("#v3State").textContent="CONFIGURANDO";
+  renderVentAlarms();renderV3Log();renderV3Vitals();drawWaves();
+  v3Last=0;requestAnimationFrame(v3Loop);
+}
+function syncVentInputs(){
+  const p=S.vent.params;
+  $("#v3Volume").value=p.Volume;$("#v3Frequencia").value=p.Frequencia;$("#v3Fluxo").value=p.Fluxo;
+  $("#v3FlowForm").value=p.flowForm;$("#v3PausaInsp").value=p.pausaInsp;
+  $("#v3Pressao").value=p.Pressao;$("#v3FrequenciaP").value=p.Frequencia;$("#v3tInsp").value=p.tInsp;$("#v3tSubidaP").value=p.tSubidaP;
+  $("#v3PS").value=p.PS;$("#v3tSubida").value=p.tSubida;
+  $("#v3PEEP").value=p.PEEP;$("#v3FIO2").value=p.FIO2;
+  $("#v3SensType").value=p.sensType;$("#v3SensValue").value=p.sensValue;
+  document.querySelectorAll('#phase3 [data-out]').forEach(el=>{const src=$("#"+el.dataset.out);if(src)el.textContent=src.value;});
+}
+function applyVentParam(id,val){
+  const p=S.vent.params;
+  if(id==="v3Volume")p.Volume=val;
+  else if(id==="v3Frequencia"||id==="v3FrequenciaP")p.Frequencia=val;
+  else if(id==="v3Fluxo")p.Fluxo=val;
+  else if(id==="v3PausaInsp")p.pausaInsp=val;
+  else if(id==="v3Pressao")p.Pressao=val;
+  else if(id==="v3tInsp")p.tInsp=val;
+  else if(id==="v3tSubidaP")p.tSubidaP=val;
+  else if(id==="v3PS")p.PS=val;
+  else if(id==="v3tSubida")p.tSubida=val;
+  else if(id==="v3PEEP")p.PEEP=val;
+  else if(id==="v3FIO2")p.FIO2=val;
+  else if(id==="v3SensValue")p.sensValue=val;
+}
+var v3Last=0;
+function v3Loop(ts){
+  if(!S.vent)return;
+  if(!v3Last)v3Last=ts;
+  const dt=Math.min(0.25,(ts-v3Last)/1000);v3Last=ts;
+  const v=S.vent;v.elapsed+=dt;
+  if(v.active){
+    ventTick(dt);
+    v.alarms.apneia=(v.xVal-v.lastBreath)>Math.max(15,2*(60/v.params.Frequencia));
+    v.alarms.vc=v.VolTrans>0&&(v.VolTrans<4*(S.case.weight||70)||v.VolTrans>8*(S.case.weight||70));
+    v.alarms.pplato=v.plato>30;
+    v.alarms.paw=v.yPress>40;
+  } else {
+    if(v.started){
+      v.yFlux=0;v.yPress=Math.max(0,v.yPress-dt*5);
+      pushBuf(v.buffers.vol,v.yVol,v.bufLen);pushBuf(v.buffers.flux,0,v.bufLen);pushBuf(v.buffers.press,v.yPress,v.bufLen);
+      v.alarms={vc:false,pplato:false,paw:false,apneia:true};
+    } else {
+      // ainda configurando, nunca foi conectado — não é apneia, só aguardando o jogador iniciar
+      pushBuf(v.buffers.vol,v.yVol,v.bufLen);pushBuf(v.buffers.flux,0,v.bufLen);pushBuf(v.buffers.press,v.yPress,v.bufLen);
+      v.alarms={vc:false,pplato:false,paw:false,apneia:false};
+    }
+  }
+  ventUpdateSpo2(dt);
+  updateScore(dt,{spo2:v.spo2,hr:v.hr,pas:v.pas},S.airway.age);
+  renderScoreBadge("#v3ScoreBadge");
+  renderV3Vitals();drawVentWaves();renderVentAlarms();
+  $("#v3Timer").textContent=fmtTime(v.elapsed);
+  const cutoff=LEVELS[S.level].cutoff;
+  const hemo=hemoCutoffs(S.airway.age,S.level);
+  const HEMO_SUSTAIN_S=20;
+  const V3_GRACE_S=10; // tempo para configurar o ventilador antes do critério hemodinâmico começar a valer
+  const hemoApplies=!(S.case.pas===0&&S.case.hr===0);
+  if(hemoApplies&&v.elapsed>=V3_GRACE_S){
+    if(v.hr<=hemo.hr){if(v.hrCritSince==null)v.hrCritSince=v.elapsed;}else v.hrCritSince=null;
+    if(v.pas<=hemo.pas){if(v.pasCritSince==null)v.pasCritSince=v.elapsed;}else v.pasCritSince=null;
+  }
+  updateWarningBanner("#v3Warning",v,cutoff,hemo,hemoApplies);
+  if(v.spo2<=cutoff){S.pcrCause="SpO₂";v3Finish("pcr");return;}
+  if(hemoApplies&&v.hrCritSince!=null&&v.elapsed-v.hrCritSince>=HEMO_SUSTAIN_S){S.pcrCause="bradicardia crítica sustentada";v3Finish("pcr");return;}
+  if(hemoApplies&&v.pasCritSince!=null&&v.elapsed-v.pasCritSince>=HEMO_SUSTAIN_S){S.pcrCause="hipotensão crítica sustentada";v3Finish("pcr");return;}
+  requestAnimationFrame(v3Loop);
+}
+function v3Finish(reason){
+  const v=S.vent;
+  S.vent=null;
+  $("#monitorState").textContent=reason==="pcr"?"PCR":"ENCERRADO";
+  $("#modalTitle").textContent=reason==="pcr"?"🚨 GAME OVER":"FASE 3 ENCERRADA";
+  $("#modalTitle").className=reason==="pcr"?"red":"green";
+  $("#modalText").textContent=reason==="pcr"?`Paciente evoluiu para PCR durante a ventilação mecânica — critério: ${S.pcrCause||"SpO₂"}.`:"Ventilação encerrada pelo usuário.";
+  const scoreFinal=Math.round(S.score==null?100:S.score);
+  const stabFinal=Math.round(S.stabilityScore==null?100:S.stabilityScore);
+  const condFinal=Math.round(S.conductScore==null?100:S.conductScore);
+  const data=[["Score final",`${scoreFinal}% — ${scoreLabel(scoreFinal)}`],["↳ Estabilidade hemodinâmica",`${stabFinal}%`],["↳ Condutas",`${condFinal}%`],["SpO₂ final",`${v.spo2.toFixed(0)}%`],["PA final",`${v.pas.toFixed(0)}/${v.pad.toFixed(0)}`],["FC final",v.hr.toFixed(0)],["Modo",v.mode],["Tempo em Fase 3",fmtTime(v.elapsed)]];
+  $("#resultGrid").innerHTML=data.map(([a,b])=>`<div class="result"><span>${a}</span><b>${b}</b></div>`).join("");
+  $("#debriefing").innerHTML=buildDebriefing();
+  $("#modalLog").innerHTML=`<h3>Fase 3 — Intervenções</h3><div style="max-height:140px;overflow:auto">${v.events.map(e=>`<div class="event"><time>${fmtTime(e.t)}</time><span>${e.text}</span></div>`).join("")}</div>`;
+  $("#toPhase3").classList.add("hidden");
+  $("#phase3").style.display="none";
+  $("#modal").classList.remove("hidden");
+}
+
+function init(){
+  $("#level").innerHTML=Object.entries(LEVELS).map(([k,v])=>`<option value="${k}">${v.name} — PCR em SpO₂ ≤ ${v.cutoff}%</option>`).join("");
+  $("#caseSelect").innerHTML=CASES.map(c=>`<option value="${c.id}">${c.name}</option>`).join("");
+  $("#caseSelect").onchange=renderPreview;$("#start").onclick=startGame;$("#quit").onclick=()=>finish("manual");$("#retry").onclick=startGame;$("#newCase").onclick=resetToSetup;
+  $("#howtoBtn").onclick=()=>$("#howtoModal").classList.remove("hidden");
+  $("#howtoClose").onclick=()=>$("#howtoModal").classList.add("hidden");
+  $("#howtoModal").addEventListener("click",e=>{if(e.target.id==="howtoModal")$("#howtoModal").classList.add("hidden")});
+  $("#toPhase3").onclick=startPhase3;
+  $("#genReport").onclick=generateReport;
+  $("#v3Quit").onclick=()=>v3Finish("manual");
+  $("#v3Mode").onchange=(e)=>{
+    if(!S.vent)return;S.vent.mode=e.target.value;
+    $("#v3ParamsVCV").style.display=S.vent.mode==="VCV"?"block":"none";
+    $("#v3ParamsPCV").style.display=S.vent.mode==="PCV"?"block":"none";
+    $("#v3ParamsPSV").style.display=S.vent.mode==="PSV"?"block":"none";
+    S.vent.momento=0;S.vent.maxFluxo=0;
+  };
+  $("#v3FlowForm").onchange=(e)=>{if(!S.vent)return;S.vent.params.flowForm=Number(e.target.value);};
+  $("#v3SensType").onchange=(e)=>{if(!S.vent)return;S.vent.params.sensType=e.target.value;};
+  $("#v3DrawABG").onclick=()=>{if(!S.vent)return;drawGaso();};
+  ["v3Volume","v3Frequencia","v3Fluxo","v3PausaInsp","v3Pressao","v3FrequenciaP","v3tInsp","v3tSubidaP","v3PS","v3tSubida","v3PEEP","v3FIO2","v3SensValue"].forEach(id=>{
+    $("#"+id).oninput=(e)=>{if(!S.vent)return;document.querySelector(`[data-out="${id}"]`).textContent=e.target.value;applyVentParam(id,Number(e.target.value));};
+  });
+  $("#v3PlayPause").onclick=()=>{
+    if(!S.vent)return;
+    S.vent.active=!S.vent.active;
+    if(S.vent.active)S.vent.started=true;
+    $("#v3PlayPause").textContent=S.vent.active?"⏸ DESCONECTAR (simular apneia)":"▶ RECONECTAR VENTILADOR";
+    $("#v3State").textContent=S.vent.active?"VENTILANDO":"DESCONECTADO";
+    v3Log(S.vent.active?`Ventilação iniciada — modo ${S.vent.mode}.`:"⚠ Paciente desconectado do ventilador!");
+  };
+  window.onresize=()=>{if(S.running)drawWaves()};renderPreview()
+}
+init();
+</script>
+<div id="printReport" class="print-only"></div>
+</body>
+</html>
