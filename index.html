@@ -24,10 +24,14 @@ button,select{font:inherit}.app{max-width:1450px;margin:auto;padding:18px}.brand
 .game{display:none;position:relative}.topbar{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;margin-bottom:12px}.topinfo{color:var(--muted);font-size:13px}
 .timer{font-size:34px;font-variant-numeric:tabular-nums;font-weight:900;padding:8px 16px;border-radius:14px;background:#071013;border:1px solid #294249}
 .quit{background:transparent;color:#c6d7da;border:1px solid #294249;border-radius:10px;padding:10px 12px;cursor:pointer}
-.layout{display:flex;flex-direction:column;gap:14px}
-.monitor{padding:14px;min-height:540px;background:#020607;border-color:#263b40;position:relative;overflow:hidden}
+.layout{display:grid;grid-template-columns:minmax(360px,1fr) minmax(420px,1.35fr);gap:14px;align-items:start;height:calc(100vh - 190px);min-height:520px}
+.leftcol{display:flex;flex-direction:column;gap:14px;height:100%;min-height:0}
+.leftcol .monitor{flex:none;height:auto;overflow:visible}
+.leftcol .log{flex:1;min-height:80px;overflow-y:auto}
+.monitor{padding:14px;background:#020607;border-color:#263b40;overflow-y:auto;height:100%;position:relative}
 .monitor:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(#ffffff05 1px,transparent 1px);background-size:100% 4px;opacity:.25}
-.monitor-head{display:flex;justify-content:space-between;color:#7e999f;font-size:12px;letter-spacing:.08em}
+.monitor-head{display:flex;justify-content:space-between;align-items:center;gap:8px;color:#7e999f;font-size:12px;letter-spacing:.08em}
+.monitor-head>span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .score-badge{padding:2px 10px;border-radius:20px;font-weight:700;letter-spacing:normal;font-size:11px}
 .score-badge.good{background:#0e2e1c;color:#6fe3a0;border:1px solid #1e5c3a}
 .score-badge.ok{background:#2a2a0e;color:#e3d36f;border:1px solid #5c5c1e}
@@ -40,20 +44,39 @@ button,select{font:inherit}.app{max-width:1450px;margin:auto;padding:18px}.brand
 .score-badge-lg.bad{background:#3a1016;color:#ff8a95;border:2px solid #a02f3d}
 .score-badge-lg.flash{transform:scale(1.12)}
 @media(max-width:950px){.score-badge-lg{font-size:15px;padding:7px 14px}}
-.vitalrow{display:grid;grid-template-columns:150px 1fr 150px;align-items:center;min-height:92px;border-bottom:1px solid #102024}
-.vital-label{font-size:13px;color:#8ba5aa}.wave{height:65px;width:100%}.value{text-align:right;font-size:52px;font-weight:800;font-variant-numeric:tabular-nums}.unit{font-size:11px;color:#7d989e}
+.vitalrow{display:grid;grid-template-columns:130px 1fr 130px;align-items:center;min-height:60px;border-bottom:1px solid #102024;border-left:3px solid transparent;padding-left:10px}
+.vitalrow.c-green{border-left-color:#52ff8f22}.vitalrow.c-cyan{border-left-color:#53d8ff22}.vitalrow.c-yellow{border-left-color:#ffe66d22}.vitalrow.c-white{border-left-color:#e8e8e822}.vitalrow.c-orange{border-left-color:#ff9d4d22}.vitalrow.c-red{border-left-color:#ff525222}
+.vital-label{font-size:12px;color:#8ba5aa}.wave-wrap{position:relative}.wave{height:38px;width:100%;display:block}.wave-lead{position:absolute;top:-2px;left:2px;font-size:9px;letter-spacing:.06em;color:#5c7278;text-transform:uppercase}.value{text-align:right;font-size:34px;font-weight:800;font-variant-numeric:tabular-nums}.value .limit{display:block;font-size:10px;font-weight:600;color:#5c7278;letter-spacing:.03em}.unit{font-size:10px;color:#7d989e}
+.pam-sub{text-align:right;font-size:13px;color:#8ba5aa;margin-top:2px}.pam-sub b{color:#ff8080;font-size:16px;font-weight:800}
+.cont-category{margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.cont-category:last-child{border-bottom:none}
+.cont-category h4{margin:0 0 8px;font-size:13px;color:var(--muted)}
+.cont-options{display:flex;gap:8px;flex-wrap:wrap}
+.cont-opt{padding:9px 14px;border-radius:8px;border:1px solid var(--line);background:#0a1219;color:var(--text);cursor:pointer;font-size:13px}
+.cont-opt.active{border-color:#2f8a58;background:#0e2e1c;color:#6fe3a0}
+.cont-opt.none{color:var(--muted)}
+.cont-detail{margin-top:10px;padding:12px;background:#0a1219;border:1px solid var(--line);border-radius:10px;font-size:13px}
+.cont-detail .row{display:flex;justify-content:space-between;margin-bottom:4px;color:#c6d7da}
+.cont-detail .row b{color:var(--text)}
+.cont-detail input{width:100px;background:#071013;color:#fff;border:1px solid #294249;border-radius:8px;padding:8px;font:inherit}
+.cont-detail .check-btn{margin-left:8px;padding:8px 14px;border-radius:8px;border:none;background:#1f6fb2;color:#fff;font-weight:700;cursor:pointer}
+.cont-feedback{margin-top:8px;padding:8px 10px;border-radius:8px;font-size:12px}
+.cont-feedback.good{background:#0e2e1c;color:#6fe3a0;border:1px solid #2f8a58}
+.cont-feedback.bad{background:#3a1016;color:#ff8a95;border:1px solid #a02f3d}
+.value.white{color:#e8e8e8}.value.orange{color:#ff9d4d}
 .green{color:var(--green)}.cyan{color:var(--cyan)}.yellow{color:var(--yellow)}.red{color:var(--red)}
-.side{display:flex;flex-direction:column;gap:14px}.casebox,.tools,.log{padding:16px}.casebox h3,.tools h3,.log h3{margin:0 0 10px}.casebox p{font-size:13px;line-height:1.45;color:#b7c9cc;margin:0}
-@media(min-width:951px){.side{display:grid;grid-template-columns:minmax(260px,1fr) minmax(0,1.7fr);grid-template-rows:auto 1fr;gap:14px}.casebox{grid-column:1;grid-row:1}.log{grid-column:1;grid-row:2}.tools{grid-column:2;grid-row:1/3}}
+.side{display:flex;flex-direction:column;gap:14px;height:100%;overflow-y:auto;padding-right:4px}.casebox,.tools,.log{padding:16px}.casebox h3,.tools h3,.log h3{margin:0 0 10px}.casebox p{font-size:13px;line-height:1.45;color:#b7c9cc;margin:0}
+@media(min-width:951px){.tools{max-height:none}}
 .toolcat{margin-top:14px}.toolcat h4{margin:0 0 7px;color:#8fa9ae;font-size:11px;letter-spacing:.09em;text-transform:uppercase}
 .toolgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.tool{background:#0c1c20;color:#dcebed;border:1px solid #244048;border-radius:10px;padding:9px;text-align:left;font-size:12px;cursor:pointer;transition:.15s}
+@media(min-width:1600px){.toolgrid{grid-template-columns:1fr 1fr 1fr}}
 .tool:hover{border-color:#4b7d88;transform:translateY(-1px)}.tool.active{background:#153329;border-color:var(--green);color:#dffff0}.tool.bnm.active{background:#35161a;border-color:var(--red)}
 .log{max-height:235px;overflow:auto}.event{display:grid;grid-template-columns:55px 1fr;gap:8px;padding:7px 0;border-bottom:1px solid #14262a;font-size:12px}.event time{color:var(--cyan)}
-.warning{position:absolute;left:20px;right:20px;top:18px;text-align:center;background:#5d171dcc;border:1px solid var(--red);padding:10px;border-radius:10px;font-weight:800;animation:pulse 1s infinite;z-index:3}
+.warning{background:#5d171dcc;border:1px solid var(--red);padding:3px 9px;border-radius:6px;font-weight:800;font-size:10.5px;white-space:nowrap;animation:pulse 1s infinite}
 @keyframes pulse{50%{opacity:.55}}.hidden{display:none!important}
 .modal{position:fixed;inset:0;background:#000b;display:flex;align-items:center;justify-content:center;padding:20px;z-index:20}.modalbox{width:min(650px,100%);max-height:90vh;overflow-y:auto;padding:25px}.modalbox h2{font-size:36px;margin:0 0 8px}.resultgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0}.result{background:#071013;border:1px solid #1e373d;border-radius:12px;padding:10px}.result span{display:block;color:#8fa9ae;font-size:11px}.result b{font-size:20px}.actions{display:flex;gap:8px;flex-wrap:wrap}.secondary{background:#102126;color:#e7f3f4;border:1px solid #2b474e;border-radius:12px;padding:13px 16px;font-weight:800;cursor:pointer}
 footer{text-align:center;color:#637b80;font-size:11px;padding:18px}
-@media(max-width:950px){.monitor{min-height:auto}.grid2{grid-template-columns:1fr}.vitalrow{grid-template-columns:95px 1fr 105px}.value{font-size:38px}.wave{height:55px}.topbar{grid-template-columns:1fr auto}.quit{grid-column:1/-1}.toolgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:950px){.layout{display:flex;flex-direction:column;height:auto}.leftcol{height:auto}.monitor{height:auto;overflow-y:visible;min-height:auto}.leftcol .log{max-height:none}.side{height:auto;overflow-y:visible}.grid2{grid-template-columns:1fr}.vitalrow{grid-template-columns:95px 1fr 105px}.value{font-size:38px}.wave{height:55px}.topbar{grid-template-columns:1fr auto}.quit{grid-column:1/-1}.toolgrid{grid-template-columns:1fr 1fr}}
 @media(max-width:480px){.setup{margin:4vh auto;padding:18px}.setup h1{font-size:30px}.vitalrow{grid-template-columns:72px 1fr 88px;min-height:74px}.value{font-size:28px}.unit{font-size:9px}.wave{height:44px}.toolgrid{grid-template-columns:1fr}.timer{font-size:24px;padding:6px 10px}.resultgrid{grid-template-columns:1fr 1fr}}
 
 .airway-banner{margin:10px 0 0;padding:10px 12px;border:1px solid #31525a;border-radius:12px;background:#0a171a;color:#bfe8ee;font-size:12px}
@@ -61,20 +84,30 @@ footer{text-align:center;color:#637b80;font-size:11px;padding:18px}
 .airway-feedback.bad{border-color:#71313a;color:#ffc3ca}.airway-feedback.good{border-color:#28724b;color:#bfffd5}
 .howto{max-width:520px}.howto ol{padding-left:20px;line-height:1.7;color:#c6d7da}.linklike{background:none;border:none;color:var(--cyan);text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
 
-.vent-waves{display:flex;flex-direction:column;gap:6px;margin-top:14px;border-top:1px solid var(--line);padding-top:10px}
-.ventwave-row{display:grid;grid-template-columns:110px 1fr 70px;align-items:center;gap:8px;font-size:11px;color:var(--muted)}
-.ventwave{width:100%;height:44px;background:#040a0c;border-radius:6px}
-.ventwave-row b{color:var(--text);font-size:15px;text-align:right}
+.vent-waves{display:flex;flex-direction:column;gap:3px;margin-top:8px;border-top:1px solid var(--line);padding-top:6px}
+.ventwave-row{display:grid;grid-template-columns:100px 1fr 60px;align-items:center;gap:6px;font-size:10px;color:var(--muted)}
+.ventwave{width:100%;height:30px;background:#040a0c;border-radius:6px}
+.ventwave-row b{color:var(--text);font-size:13px;text-align:right}
 .vent-alarms{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
 .vent-alarm{padding:4px 10px;border-radius:20px;font-size:11px;border:1px solid var(--line);color:var(--muted)}
 .vent-alarm.on{background:#3a1016;border-color:var(--red);color:#ffc3ca;animation:pulse 1s infinite}
-.vent-params .field{margin-bottom:8px}
+.vent-params .field{margin-bottom:5px}
 .vent-params input[type=range]{width:100%}
 .vent-params .field label{display:flex;justify-content:space-between}
+.vp-field label{display:block;margin-bottom:4px}
+.vp-row{display:flex;align-items:center;gap:6px}
+.vp-btn{width:28px;height:28px;flex:none;border-radius:7px;border:1px solid var(--line);background:#0c1c20;color:var(--text);font-size:16px;font-weight:700;cursor:pointer;line-height:1}
+.vp-btn:active{background:#173038}
+.vp-row input[type=number]{flex:1;min-width:0;text-align:center;background:#071013;color:#fff;border:1px solid #294249;border-radius:7px;padding:5px 4px;font:inherit;font-weight:700;font-size:14px}
+.vp-row input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.vp-range{font-size:10px;color:#5c7278;margin-top:1px}
+.gaso-dx{margin-top:5px;padding:6px 10px;border-radius:8px;font-size:12px;font-weight:700}
+.gaso-dx.normal{background:#0e2e1c;color:#6fe3a0;border:1px solid #2f8a58}
+.gaso-dx.abn{background:#3a1016;color:#ff8a95;border:1px solid #a02f3d}
 #phase3 select{width:100%;background:#0a1219;color:var(--text);border:1px solid var(--line);border-radius:6px;padding:6px}
-.vent-readouts{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--muted)}
+.vent-readouts{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;font-size:11px;color:var(--muted)}
 .vent-readouts b{color:var(--text);font-size:14px;margin-left:4px}
-.mech h4,.gaso h4{margin:0 0 8px;font-size:13px;color:var(--muted)}
+.mech h4,.gaso h4{margin:0 0 5px;font-size:12px;color:var(--muted)}
 .mech .hint,.gaso .hint,.vent-params .hint{font-size:11px;color:#5c7278;font-weight:400}
 .vent-params .hint{margin:4px 0 0}
 .debriefing{margin:14px 0;padding:12px 14px;background:#0a1219;border:1px solid var(--line);border-radius:10px;text-align:left;font-size:13px;line-height:1.6}
@@ -109,7 +142,7 @@ footer{text-align:center;color:#637b80;font-size:11px;padding:18px}
   <div class="brand"><div class="logo">JOGO <b>SAVeM</b></div><div class="badge">CleverMed • Simulador educacional</div></div>
 
   <section id="setup" class="setup card">
-    <h1>Você tem 2 minutos.</h1>
+    <h1>Você tem 15 minutos.</h1>
     <p>Escolha seu nível e um caso clínico. Durante a simulação, aplique as ferramentas e acompanhe a resposta do paciente no monitor.</p>
     <div class="grid2">
       <div class="field"><label>Nome do aluno</label><input type="text" id="studentName" placeholder="Seu nome"></div>
@@ -132,25 +165,26 @@ footer{text-align:center;color:#637b80;font-size:11px;padding:18px}
     <div class="topbar">
       <div><div id="gameTitle" style="font-weight:900;font-size:18px"></div><div id="gameMeta" class="topinfo"></div></div>
       <div id="scoreBadge" class="score-badge-lg good">SCORE 100%</div>
-      <div id="timer" class="timer">02:00</div>
+      <div id="timer" class="timer">15:00</div>
       <button id="quit" class="quit">Encerrar</button>
     </div>
     <div class="layout">
-      <div id="monitor" class="monitor card">
-        <div id="warning" class="warning hidden">⚠ SATURAÇÃO PRÓXIMA AO LIMITE DE PCR</div>
-        <div class="monitor-head"><span>MONITOR MULTIPARAMÉTRICO</span><span id="monitorState">EM SIMULAÇÃO</span></div>
-        <div class="vitalrow"><div><div class="vital-label">FC</div><div class="unit">bpm</div></div><canvas class="wave" data-wave="ecg"></canvas><div id="hr" class="value green">--</div></div>
-        <div class="vitalrow"><div><div class="vital-label">SpO₂</div><div class="unit">%</div></div><canvas class="wave" data-wave="spo2"></canvas><div id="spo2" class="value cyan">--</div></div>
-        <div class="vitalrow"><div><div class="vital-label">PA</div><div class="unit">mmHg</div></div><canvas class="wave" data-wave="pa"></canvas><div id="bp" class="value yellow" style="font-size:40px">--/--</div></div>
-        <div class="vitalrow"><div><div class="vital-label">PAM</div><div class="unit">mmHg</div></div><canvas class="wave" data-wave="pam"></canvas><div id="map" class="value yellow">--</div></div>
-        <div class="vitalrow"><div><div class="vital-label">FR</div><div class="unit">irpm</div></div><canvas class="wave" data-wave="rr"></canvas><div id="rr" class="value green">--</div></div>
+      <div class="leftcol">
+        <div id="monitor" class="monitor card">
+          <div class="monitor-head"><span>MONITOR MULTIPARAMÉTRICO</span><span id="warning" class="warning hidden">⚠ Limite de PCR próximo</span><span id="monitorState">EM SIMULAÇÃO</span></div>
+          <div class="vitalrow c-green"><div><div class="vital-label">FC</div><div class="unit">bpm</div></div><div class="wave-wrap"><span class="wave-lead">II</span><canvas class="wave" data-wave="ecg"></canvas></div><div id="hr" class="value green">--</div></div>
+          <div class="vitalrow c-cyan"><div><div class="vital-label">SpO₂</div><div class="unit">%</div></div><div class="wave-wrap"><span class="wave-lead">Pleth</span><canvas class="wave" data-wave="spo2"></canvas></div><div id="spo2" class="value cyan">--</div></div>
+          <div class="vitalrow c-white"><div><div class="vital-label">EtCO₂</div><div class="unit">mmHg</div></div><div id="capnoWrap" class="wave-wrap"><span class="wave-lead">CO₂</span><canvas class="wave" data-wave="capno"></canvas></div><div id="etco2" class="value white">--</div></div>
+          <div class="vitalrow c-red"><div><div class="vital-label">PA</div><div class="unit">mmHg</div></div><div class="wave-wrap"><span class="wave-lead">ART</span><canvas class="wave" data-wave="pa"></canvas></div><div><div id="bp" class="value red" style="font-size:40px">--/--</div><div class="pam-sub">PAM <b id="map">--</b></div></div></div>
+          <div class="vitalrow c-yellow"><div><div class="vital-label">FR</div><div class="unit">irpm</div></div><div class="wave-wrap"><span class="wave-lead">Resp</span><canvas class="wave" data-wave="rr"></canvas></div><div id="rr" class="value yellow">--</div></div>
+        </div>
+        <div class="log card"><h3>Linha do tempo</h3><div id="eventLog"></div></div>
       </div>
       <aside class="side">
         <div class="casebox card"><h3 id="sideCase"></h3><p id="sideDesc"></p><div id="stateChips" class="vitals-preview"></div></div>
         <div class="tools card"><h3>Sedação e pré-oxigenação</h3><div id="toolPanel"></div>
 <div class="airway-banner"><b>FASE 2 — MANEJO DA VIA AÉREA</b><br>O monitor e o cronômetro continuam ativos durante as tentativas. Cada paciente tem fatores ocultos (anatomia, sedação, trauma) que só são revelados quando você tenta uma técnica.</div>
 <div id="airwayPanel"></div><div id="airwayFeedback" class="airway-feedback">Selecione uma ferramenta de manejo da via aérea.</div></div>
-        <div class="log card"><h3>Linha do tempo</h3><div id="eventLog"></div></div>
       </aside>
     </div>
   </section>
@@ -163,28 +197,31 @@ footer{text-align:center;color:#637b80;font-size:11px;padding:18px}
       <button id="v3Quit" class="quit">Encerrar</button>
     </div>
     <div class="layout">
-      <div id="v3Monitor" class="monitor card">
-        <div id="v3Warning" class="warning hidden">⚠ SATURAÇÃO PRÓXIMA AO LIMITE DE PCR</div>
-        <div class="monitor-head"><span>MONITOR + VENTILADOR</span><span id="v3State">CONFIGURANDO</span></div>
-        <div class="vitalrow"><div><div class="vital-label">FC</div><div class="unit">bpm</div></div><canvas class="wave" data-wave="ecg"></canvas><div id="v3hr" class="value green">--</div></div>
-        <div class="vitalrow"><div><div class="vital-label">SpO₂</div><div class="unit">%</div></div><canvas class="wave" data-wave="spo2"></canvas><div id="v3spo2" class="value cyan">--</div></div>
-        <div class="vitalrow"><div><div class="vital-label">PA</div><div class="unit">mmHg</div></div><canvas class="wave" data-wave="pa"></canvas><div id="v3bp" class="value yellow" style="font-size:40px">--/--</div></div>
-        <div class="vent-waves">
-          <div class="ventwave-row"><span>Volume (mL)</span><canvas class="ventwave" data-vwave="vol"></canvas><b id="v3vol">--</b></div>
-          <div class="ventwave-row"><span>Fluxo (L/min)</span><canvas class="ventwave" data-vwave="flux"></canvas><b id="v3flux">--</b></div>
-          <div class="ventwave-row"><span>Pressão (cmH₂O)</span><canvas class="ventwave" data-vwave="press"></canvas><b id="v3press">--</b></div>
+      <div class="leftcol">
+        <div id="v3Monitor" class="monitor card">
+          <div class="monitor-head"><span>MONITOR + VENTILADOR</span><span id="v3Warning" class="warning hidden">⚠ Limite de PCR próximo</span><span id="v3State">CONFIGURANDO</span></div>
+          <div class="vitalrow c-green"><div><div class="vital-label">FC</div><div class="unit">bpm</div></div><div class="wave-wrap"><span class="wave-lead">II</span><canvas class="wave" data-wave="ecg"></canvas></div><div id="v3hr" class="value green">--</div></div>
+          <div class="vitalrow c-cyan"><div><div class="vital-label">SpO₂</div><div class="unit">%</div></div><div class="wave-wrap"><span class="wave-lead">Pleth</span><canvas class="wave" data-wave="spo2"></canvas></div><div id="v3spo2" class="value cyan">--</div></div>
+          <div class="vitalrow c-white"><div><div class="vital-label">EtCO₂</div><div class="unit">mmHg</div></div><div id="v3CapnoWrap" class="wave-wrap"><span class="wave-lead">CO₂</span><canvas class="wave" data-wave="capno"></canvas></div><div id="v3etco2" class="value white">--</div></div>
+          <div class="vitalrow c-red"><div><div class="vital-label">PA</div><div class="unit">mmHg</div></div><div class="wave-wrap"><span class="wave-lead">ART</span><canvas class="wave" data-wave="pa"></canvas></div><div id="v3bp" class="value red" style="font-size:40px">--/--</div></div>
+          <div class="vent-waves">
+            <div class="ventwave-row"><span>Volume (mL)</span><canvas class="ventwave" data-vwave="vol"></canvas><b id="v3vol">--</b></div>
+            <div class="ventwave-row"><span>Fluxo (L/min)</span><canvas class="ventwave" data-vwave="flux"></canvas><b id="v3flux">--</b></div>
+            <div class="ventwave-row"><span>Pressão (cmH₂O)</span><canvas class="ventwave" data-vwave="press"></canvas><b id="v3press">--</b></div>
+          </div>
+          <div id="v3Readouts" class="vent-readouts"></div>
+          <div id="v3Alarms" class="vent-alarms"></div>
+          <div class="mech card" style="margin-top:6px">
+            <h4>Mecânica respiratória calculada <span class="hint">(a partir das curvas — o preset real do paciente não é revelado)</span></h4>
+            <div id="v3Mech" class="vitals-preview"></div>
+          </div>
+          <div class="gaso card" style="margin-top:6px">
+            <h4>Gasometria arterial <span class="hint">(automática — atualiza a cada ajuste do ventilador)</span></h4>
+            <div id="v3Gaso" class="vitals-preview"></div>
+            <div id="v3GasoDx" class="gaso-dx"></div>
+          </div>
         </div>
-        <div id="v3Readouts" class="vent-readouts"></div>
-        <div id="v3Alarms" class="vent-alarms"></div>
-        <div class="mech card" style="margin-top:10px">
-          <h4>Mecânica respiratória calculada <span class="hint">(a partir das curvas — o preset real do paciente não é revelado)</span></h4>
-          <div id="v3Mech" class="vitals-preview"></div>
-        </div>
-        <div class="gaso card" style="margin-top:10px">
-          <h4>Gasometria arterial</h4>
-          <div id="v3Gaso" class="vitals-preview"><span class="chip">Ainda não colhida</span></div>
-          <button id="v3DrawABG" class="secondary" style="margin-top:8px;width:auto">🩸 COLHER GASOMETRIA</button>
-        </div>
+        <div class="log card"><h3>Linha do tempo</h3><div id="v3EventLog"></div></div>
       </div>
       <aside class="side">
         <div class="casebox card"><h3 id="v3Case"></h3><p id="v3Desc"></p><div id="v3PatientInfo" class="vitals-preview"></div></div>
@@ -194,36 +231,80 @@ footer{text-align:center;color:#637b80;font-size:11px;padding:18px}
             <select id="v3Mode"><option value="VCV">VCV — Volume Controlado</option><option value="PCV">PCV — Pressão Controlada</option><option value="PSV">PSV/CPAP — Pressão de Suporte</option></select>
           </div>
           <div id="v3ParamsVCV" class="vent-params">
-            <div class="field"><label>Volume corrente (mL)</label><input type="range" id="v3Volume" min="100" max="900" step="10" value="400"><span data-out="v3Volume">400</span></div>
-            <div class="field"><label>Frequência (irpm)</label><input type="range" id="v3Frequencia" min="6" max="40" step="1" value="14"><span data-out="v3Frequencia">14</span></div>
-            <div class="field"><label>Fluxo inspiratório (L/min)</label><input type="range" id="v3Fluxo" min="20" max="80" step="1" value="40"><span data-out="v3Fluxo">40</span></div>
+            <div class="field vp-field"><label>Volume corrente (mL)</label><div class="vp-row"><button type="button" class="vp-btn" data-target="v3Volume" data-delta="-10">−</button><input type="number" id="v3Volume" min="100" max="900" step="10" value="400"><button type="button" class="vp-btn" data-target="v3Volume" data-delta="10">+</button></div><div class="vp-range">Faixa: 100–900 mL</div></div>
+            <div class="field vp-field"><label>Frequência (irpm)</label><div class="vp-row"><button type="button" class="vp-btn" data-target="v3Frequencia" data-delta="-1">−</button><input type="number" id="v3Frequencia" min="6" max="40" step="1" value="14"><button type="button" class="vp-btn" data-target="v3Frequencia" data-delta="1">+</button></div><div class="vp-range">Faixa: 6–40 irpm</div></div>
+            <div class="field vp-field"><label>Fluxo inspiratório (L/min)</label><div class="vp-row"><button type="button" class="vp-btn" data-target="v3Fluxo" data-delta="-5">−</button><input type="number" id="v3Fluxo" min="20" max="80" step="1" value="40"><button type="button" class="vp-btn" data-target="v3Fluxo" data-delta="5">+</button></div><div class="vp-range">Faixa: 20–80 L/min</div></div>
             <div class="field"><label>Formato da onda de fluxo</label>
               <select id="v3FlowForm"><option value="1">Quadrada (constante)</option><option value="0.5">Decelerante intermediária</option><option value="0">Decelerante (rampa)</option></select>
             </div>
-            <div class="field"><label>Pausa inspiratória (s)</label><input type="range" id="v3PausaInsp" min="0" max="2" step="0.1" value="0"><span data-out="v3PausaInsp">0</span></div>
+            <div class="field vp-field"><label>Pausa inspiratória (s)</label><div class="vp-row"><button type="button" class="vp-btn" data-target="v3PausaInsp" data-delta="-0.1">−</button><input type="number" id="v3PausaInsp" min="0" max="2" step="0.1" value="0"><button type="button" class="vp-btn" data-target="v3PausaInsp" data-delta="0.1">+</button></div><div class="vp-range">Faixa: 0–2 s</div></div>
           </div>
           <div id="v3ParamsPCV" class="vent-params" style="display:none">
-            <div class="field"><label>Pressão controlada (cmH₂O)</label><input type="range" id="v3Pressao" min="5" max="40" step="1" value="15"><span data-out="v3Pressao">15</span></div>
-            <div class="field"><label>Frequência (irpm)</label><input type="range" id="v3FrequenciaP" min="6" max="40" step="1" value="14"><span data-out="v3FrequenciaP">14</span></div>
-            <div class="field"><label>Tempo inspiratório (s)</label><input type="range" id="v3tInsp" min="0.5" max="2" step="0.1" value="1"><span data-out="v3tInsp">1</span></div>
-            <div class="field"><label>Tempo de subida (s)</label><input type="range" id="v3tSubidaP" min="0.05" max="0.5" step="0.05" value="0.1"><span data-out="v3tSubidaP">0.1</span></div>
+            <div class="field vp-field"><label>Pressão controlada (cmH₂O)</label><div class="vp-row"><button type="button" class="vp-btn" data-target="v3Pressao" data-delta="-1">−</button><input type="number" id="v3Pressao" min="5" max="40" step="1" value="15"><button type="button" class="vp-btn" data-target="v3Pressao" data-delta="1">+</button></div><div class="vp-range">Faixa: 5–40 cmH₂O</div></div>
+            <div class="field vp-field"><label>Frequência (irpm)</label><div class="vp-row"><button type="button" class="vp-btn" data-target="v3FrequenciaP" data-delta="-1">−</button><input type="number" id="v3FrequenciaP" min="6" max="40" step="1" value="14"><button type="button" class="vp-btn" data-target="v3FrequenciaP" data-delta="1">+</button></div><div class="vp-range">Faixa: 6–40 irpm</div></div>
+            <div class="field vp-field"><label>Tempo inspiratório (s)</label><div class="vp-row"><button type="button" class="vp-btn" data-target="v3tInsp" data-delta="-0.1">−</button><input type="number" id="v3tInsp" min="0.5" max="2" step="0.1" value="1"><button type="button" class="vp-btn" data-target="v3tInsp" data-delta="0.1">+</button></div><div class="vp-range">Faixa: 0,5–2 s</div></div>
+            <div class="field vp-field"><label>Tempo de subida (s)</label><div class="vp-row"><button type="button" class="vp-btn" data-target="v3tSubidaP" data-delta="-0.05">−</button><input type="number" id="v3tSubidaP" min="0.05" max="0.5" step="0.05" value="0.1"><button type="button" class="vp-btn" data-target="v3tSubidaP" data-delta="0.05">+</button></div><div class="vp-range">Faixa: 0,05–0,5 s</div></div>
           </div>
           <div id="v3ParamsPSV" class="vent-params" style="display:none">
-            <div class="field"><label>Pressão de suporte (cmH₂O acima do PEEP)</label><input type="range" id="v3PS" min="0" max="30" step="1" value="10"><span data-out="v3PS">10</span></div>
-            <div class="field"><label>Tempo de subida (s)</label><input type="range" id="v3tSubida" min="0.05" max="0.5" step="0.05" value="0.1"><span data-out="v3tSubida">0.1</span></div>
+            <div class="field vp-field"><label>Pressão de suporte (cmH₂O acima do PEEP)</label><div class="vp-row"><button type="button" class="vp-btn" data-target="v3PS" data-delta="-1">−</button><input type="number" id="v3PS" min="0" max="30" step="1" value="10"><button type="button" class="vp-btn" data-target="v3PS" data-delta="1">+</button></div><div class="vp-range">Faixa: 0–30 cmH₂O</div></div>
+            <div class="field vp-field"><label>Tempo de subida (s)</label><div class="vp-row"><button type="button" class="vp-btn" data-target="v3tSubida" data-delta="-0.05">−</button><input type="number" id="v3tSubida" min="0.05" max="0.5" step="0.05" value="0.1"><button type="button" class="vp-btn" data-target="v3tSubida" data-delta="0.05">+</button></div><div class="vp-range">Faixa: 0,05–0,5 s</div></div>
             <p class="hint">Só cicla se o paciente tiver esforço respiratório espontâneo — sem esforço, PSV isolado deixa o paciente em apneia.</p>
           </div>
-          <div class="field"><label>PEEP (cmH₂O)</label><input type="range" id="v3PEEP" min="0" max="24" step="1" value="5"><span data-out="v3PEEP">5</span></div>
-          <div class="field"><label>FiO₂ (%)</label><input type="range" id="v3FIO2" min="21" max="100" step="1" value="40"><span data-out="v3FIO2">40</span></div>
+          <div class="field vp-field"><label>PEEP (cmH₂O)</label><div class="vp-row"><button type="button" class="vp-btn" data-target="v3PEEP" data-delta="-1">−</button><input type="number" id="v3PEEP" min="0" max="24" step="1" value="5"><button type="button" class="vp-btn" data-target="v3PEEP" data-delta="1">+</button></div><div class="vp-range">Faixa: 0–24 cmH₂O</div></div>
+          <div class="field vp-field"><label>FiO₂ (%)</label><div class="vp-row"><button type="button" class="vp-btn" data-target="v3FIO2" data-delta="-5">−</button><input type="number" id="v3FIO2" min="21" max="100" step="1" value="40"><button type="button" class="vp-btn" data-target="v3FIO2" data-delta="5">+</button></div><div class="vp-range">Faixa: 21–100%</div></div>
           <div class="field"><label>Sensibilidade de disparo</label>
             <select id="v3SensType"><option value="pressao">Pressão (cmH₂O)</option><option value="fluxo">Fluxo (L/min)</option></select>
-            <input type="range" id="v3SensValue" min="1" max="10" step="0.5" value="2"><span data-out="v3SensValue">2</span>
+            <div id="v3SensPressaoWrap" class="vp-field"><div class="vp-row"><button type="button" class="vp-btn" data-target="v3SensPressao" data-delta="-0.5">−</button><input type="number" id="v3SensPressao" min="-5" max="5" step="0.5" value="-2"><button type="button" class="vp-btn" data-target="v3SensPressao" data-delta="0.5">+</button></div><div class="vp-range">Faixa: -5 a +5 cmH₂O</div></div>
+            <div id="v3SensFluxoWrap" class="vp-field" style="display:none"><div class="vp-row"><button type="button" class="vp-btn" data-target="v3SensFluxo" data-delta="-0.5">−</button><input type="number" id="v3SensFluxo" min="0" max="10" step="0.5" value="2"><button type="button" class="vp-btn" data-target="v3SensFluxo" data-delta="0.5">+</button></div><div class="vp-range">Faixa: 0–10 L/min</div></div>
           </div>
           <div style="display:flex;gap:8px;margin-top:10px">
             <button id="v3PlayPause" class="primary" style="width:auto;flex:1">▶ INICIAR VENTILAÇÃO</button>
           </div>
         </div>
-        <div class="log card"><h3>Linha do tempo</h3><div id="v3EventLog"></div></div>
+      </aside>
+    </div>
+  </section>
+
+  <section id="phase4" class="game" style="display:none">
+    <div class="topbar">
+      <div><div style="font-weight:900;font-size:18px">FASE 4 — SEDAÇÃO CONTÍNUA</div><div id="v4Meta" class="topinfo"></div></div>
+      <div id="v4ScoreBadge" class="score-badge-lg good">SCORE 100%</div>
+      <div id="v4Timer" class="timer">00:00</div>
+      <button id="v4Quit" class="quit">Concluir Fase 4</button>
+    </div>
+    <div class="layout">
+      <div class="leftcol">
+        <div class="monitor card">
+          <div class="monitor-head"><span>MONITOR MULTIPARAMÉTRICO</span><span id="v4Warning" class="warning hidden">⚠ Limite de PCR próximo</span><span id="v4State">EM INFUSÃO CONTÍNUA</span></div>
+          <div class="vitalrow c-green"><div><div class="vital-label">FC</div><div class="unit">bpm</div></div><div class="wave-wrap"><span class="wave-lead">II</span><canvas class="wave" data-wave="ecg"></canvas></div><div id="v4hr" class="value green">--</div></div>
+          <div class="vitalrow c-cyan"><div><div class="vital-label">SpO₂</div><div class="unit">%</div></div><div class="wave-wrap"><span class="wave-lead">Pleth</span><canvas class="wave" data-wave="spo2"></canvas></div><div id="v4spo2" class="value cyan">--</div></div>
+          <div class="vitalrow c-white"><div><div class="vital-label">EtCO₂</div><div class="unit">mmHg</div></div><div class="wave-wrap"><span class="wave-lead">CO₂</span><canvas class="wave" data-wave="capno"></canvas></div><div id="v4etco2" class="value white">--</div></div>
+          <div class="vitalrow c-red"><div><div class="vital-label">PA</div><div class="unit">mmHg</div></div><div class="wave-wrap"><span class="wave-lead">ART</span><canvas class="wave" data-wave="pa"></canvas></div><div><div id="v4bp" class="value red" style="font-size:40px">--/--</div><div class="pam-sub">PAM <b id="v4map">--</b></div></div></div>
+          <div class="vitalrow c-yellow"><div><div class="vital-label">FR</div><div class="unit">irpm</div></div><div class="wave-wrap"><span class="wave-lead">Resp</span><canvas class="wave" data-wave="rr"></canvas></div><div id="v4rr" class="value yellow">--</div></div>
+        </div>
+        <div class="log card"><h3>Linha do tempo</h3><div id="v4EventLog"></div></div>
+      </div>
+      <aside class="side">
+        <div class="casebox card"><h3 id="v4Case"></h3><p id="v4Desc"></p><div id="v4PatientInfo" class="vitals-preview"></div></div>
+        <div class="tools card">
+          <h3>Sedação, analgesia e bloqueio contínuos</h3>
+          <p class="hint">Nenhuma das três categorias é obrigatória. Escolha a droga e a vazão (mL/h) que quiser — o jogo calcula a dose resultante e aplica o efeito hemodinâmico correspondente, em tempo real.</p>
+          <div class="cont-category">
+            <h4>Analgesia contínua</h4>
+            <div class="cont-options" id="analgesiaOptions"></div>
+            <div class="cont-detail hidden" id="analgesiaDetail"></div>
+          </div>
+          <div class="cont-category">
+            <h4>Sedação contínua</h4>
+            <div class="cont-options" id="sedacaoOptions"></div>
+            <div class="cont-detail hidden" id="sedacaoDetail"></div>
+          </div>
+          <div class="cont-category">
+            <h4>Bloqueio neuromuscular contínuo</h4>
+            <div class="cont-options" id="bnmOptions"></div>
+            <div class="cont-detail hidden" id="bnmDetail"></div>
+          </div>
+        </div>
       </aside>
     </div>
   </section>
@@ -235,7 +316,7 @@ footer{text-align:center;color:#637b80;font-size:11px;padding:18px}
   <div id="resultGrid" class="resultgrid"></div>
   <div id="debriefing" class="debriefing"></div>
   <div id="modalLog"></div>
-  <div class="actions"><button id="toPhase3" class="primary hidden">AVANÇAR PARA VENTILAÇÃO MECÂNICA</button><button id="genReport" class="secondary">📄 GERAR RELATÓRIO</button><button id="retry" class="primary">TENTAR NOVAMENTE</button><button id="newCase" class="secondary">NOVO CASO</button></div>
+  <div class="actions"><button id="toPhase3" class="primary hidden">AVANÇAR PARA VENTILAÇÃO MECÂNICA</button><button id="toPhase4" class="primary hidden">INICIAR SEDAÇÃO CONTÍNUA</button><button id="genReport" class="secondary">📄 GERAR RELATÓRIO</button><button id="retry" class="primary">TENTAR NOVAMENTE</button><button id="newCase" class="secondary">NOVO CASO</button></div>
 </div></div>
 
 <div id="howtoModal" class="modal hidden"><div class="modalbox card howto">
@@ -243,7 +324,7 @@ footer{text-align:center;color:#637b80;font-size:11px;padding:18px}
   <ol>
     <li>Escolha seu nível — isso define o SpO₂ mínimo antes de uma PCR.</li>
     <li>Escolha um caso clínico (leito) e leia o quadro do paciente.</li>
-    <li>Em 2 minutos, use pré-oxigenação, pré-tratamento, hipnóticos e bloqueadores neuromusculares para manejar o paciente.</li>
+    <li>Em 15 minutos, use pré-oxigenação, pré-tratamento, hipnóticos e bloqueadores neuromusculares para manejar o paciente.</li>
     <li>Se precisar de via aérea avançada, use o painel "Manejo da via aérea" — as técnicas certas dependem do caso (Cormack-Lehane, trauma facial, possibilidade de ventilação supraglótica etc.).</li>
     <li>Na via aérea básica (AMBU+máscara, Guedel, cânula nasofaríngea), cada paciente esconde fatores próprios (ex.: barba, edentulismo, edema facial, sedação insuficiente) que mudam se a saturação melhora, piora ou fica igual — você só descobre tentando.</li>
     <li>Antes de sedar e pré-oxigenar, posicione o paciente: coxim occipital (crianças maiores/adultos), coxim interescapular (até 4-5 anos), rodilha occipital + interescapular (recém-nascido), ou rampa (obesos/gestantes). Posicionamento errado ou ausente piora o Cormack-Lehane em pelo menos 1 ponto.</li>
@@ -251,7 +332,7 @@ footer{text-align:center;color:#637b80;font-size:11px;padding:18px}
     <li>Na via aérea avançada, laringoscopia direta ou videolaringoscopia só revelam o Cormack-Lehane (1 a 4) — não intubam sozinhas. Depois use "Intubar" (Cormack I sempre funciona), "Intubação com fio-guia" (funciona em Cormack I ou II) ou, em Cormack II/III, introduza o bougie primeiro e depois clique em "Intubar". Em Cormack IV, use o dispositivo supraglótico.</li>
     <li>Bloqueadores neuromusculares zeram a FR no monitor e aceleram o cronômetro em 2x — o paciente fica em apneia até a via aérea ser resolvida.</li>
     <li>Se a SpO₂ cair até o cutoff do seu nível, o paciente entra em PCR — GAME OVER.</li>
-    <li>Se você sobreviver aos 2 minutos com a via aérea estabelecida, pode avançar para a Fase 3: configurar o ventilador mecânico (VCV, PCV ou PSV/CPAP), ajustar PEEP, FiO₂, sensibilidade de disparo, pausa inspiratória e formato da onda de fluxo — e manter o paciente estável, inclusive reagindo a uma desconexão simulada.</li>
+    <li>Se você sobreviver aos 15 minutos com a via aérea estabelecida, pode avançar para a Fase 3: configurar o ventilador mecânico (VCV, PCV ou PSV/CPAP), ajustar PEEP, FiO₂, sensibilidade de disparo, pausa inspiratória e formato da onda de fluxo — e manter o paciente estável, inclusive reagindo a uma desconexão simulada.</li>
     <li>Na Fase 3, o preset real de mecânica pulmonar do paciente não é revelado — você acompanha a Complacência/Resistência calculadas a partir das curvas e pode colher uma gasometria arterial (pH, PaO₂, PaCO₂) para ajustar a conduta.</li>
   </ol>
   <div class="actions"><button id="howtoClose" class="primary">ENTENDI</button></div>
@@ -301,7 +382,7 @@ function updateWarningBanner(sel,v,cutoff,hemo,hemoApplies){
   if(hemoApplies&&v.hr<=hemo.hr+10)parts.push("FC");
   if(hemoApplies&&v.pas<=hemo.pas+10)parts.push("PA");
   el.classList.toggle("hidden",parts.length===0);
-  if(parts.length)el.textContent=`⚠ ${parts.join(" / ")} PRÓXIMO(A) AO LIMITE DE PCR`;
+  if(parts.length)el.textContent=`⚠ ${parts.join("/")} → PCR`;
 }
 // Score de estabilidade hemodinâmica (regra nova, não vem da planilha) — 0 a 100,
 // contínuo durante toda a partida, sobe/desce a cada instante conforme SpO2/FC/PA
@@ -338,7 +419,7 @@ function pasZone(pas,age){
   if(pas<lo||pas>hi)return"caution";
   return"good";
 }
-function scoreRate(zone){return zone==="danger"?-3:zone==="caution"?-1:0.5;}
+function scoreRate(zone){return zone==="danger"?-1.5:zone==="caution"?-0.5:0.6;}
 // Score = combinação de dois componentes independentes (regra ajustada pelo usuário):
 // - stabilityScore: contínuo, sobe/desce a cada instante com SpO2/FC/PA (pode se recuperar).
 // - conductScore: só muda em pontos discretos (condutas certas/erradas) e NUNCA se
@@ -623,7 +704,7 @@ const TOOLS=[
 {cat:"Pré-oxigenação",id:"ambu",name:"Ventilação manual (AMBU)",o2:1},
 {cat:"Pré-tratamento",id:"lido_iv",name:"Lidocaína IV 1,5 mg/kg",pa:0,hr:0,rr:0},
 {cat:"Pré-tratamento",id:"lido_spray",name:"Lidocaína spray",pa:0,hr:0,rr:0},
-{cat:"Pré-tratamento",id:"keta_low",name:"Cetamina 0,2 mg/kg",pa:.15,hr:.2,rr:0,removesAgitation:true},
+{cat:"Pré-tratamento",id:"keta_low",name:"Cetamina 0,2 mg/kg",pa:.06,hr:.08,rr:0,removesAgitation:true},
 {cat:"Pré-tratamento",id:"metaraminol",name:"Metaraminol",pa:.3,hr:-.2,rr:0},
 {cat:"Pré-tratamento",id:"efedrina",name:"Efedrina",pa:.2,hr:.1,rr:0},
 {cat:"Pré-tratamento",id:"adrenalina",name:"Adrenalina 20 mcg",pa:.4,hr:.2,rr:0},
@@ -634,7 +715,7 @@ const TOOLS=[
 {cat:"Pré-tratamento",id:"suf02",name:"Sufentanil 0,2 mcg/kg",pa:-.08,hr:-.2,rr:-.2},
 {cat:"Hipnóticos",id:"mid02",name:"Midazolam 0,2 mg/kg",pa:-.05,hr:-.05,rr:-.1},
 {cat:"Hipnóticos",id:"mid03",name:"Midazolam 0,3 mg/kg",pa:-.1,hr:-.05,rr:-.2},
-{cat:"Hipnóticos",id:"keta2",name:"Cetamina 2 mg/kg",pa:.15,hr:.2,rr:0,removesAgitation:true},
+{cat:"Hipnóticos",id:"keta2",name:"Cetamina 2 mg/kg",pa:.06,hr:.08,rr:0,removesAgitation:true},
 {cat:"Hipnóticos",id:"prop1",name:"Propofol 1 mg/kg",pa:-.1,hr:0,rr:-.1},
 {cat:"Hipnóticos",id:"prop2",name:"Propofol 2 mg/kg",pa:-.2,hr:0,rr:-.3},
 {cat:"Hipnóticos",id:"etomidato",name:"Etomidato 0,2 mg/kg",pa:0,hr:0,rr:-.3},
@@ -688,8 +769,8 @@ function calculateVitals(t){
   if(S.states.agitated) o2=0;
   const decay=.017*t;
   let spo2=c.spo2+((100-c.spo2)*o2)-decay-S.airwayPenalty+S.airwayBoost;
-  if(S.cicoStartTime!=null) spo2-=0.3*(t-S.cicoStartTime); // CICO: queda progressiva até via aérea cirúrgica
-  if(S.apneicSince!=null) spo2-=0.25*(t-S.apneicSince); // apneia entre tentativas de intubação — ventile com AMBU/máscara para interromper
+  if(S.cicoStartTime!=null) spo2-=0.05*(t-S.cicoStartTime); // CICO: queda progressiva até via aérea cirúrgica
+  if(S.apneicSince!=null) spo2-=0.04*(t-S.apneicSince); // apneia entre tentativas de intubação — ventile com AMBU/máscara para interromper
   if(S.oxygenationSecured) spo2=Math.max(spo2,96);
   let pasBase=c.pas-decay, padBase=c.pad-decay, hrBase=c.hr-decay, rrBase=c.rr-decay;
   const prePA=sum(pre,"pa"), hypPA=sum(hyp,"pa"), preHR=sum(pre,"hr"), hypHR=sum(hyp,"hr"), preRR=sum(pre,"rr"), hypRR=sum(hyp,"rr");
@@ -1042,11 +1123,11 @@ function tick(){
   const scoreDt=S.gameTime-(S.lastScoreTime==null?S.gameTime:S.lastScoreTime);S.lastScoreTime=S.gameTime;
   updateScore(scoreDt,v,S.airway.age);
   renderScoreBadge("#scoreBadge");
-  $("#timer").textContent=fmtTime(120-S.gameTime);
+  $("#timer").textContent=fmtTime(900-S.gameTime);
   const cutoff=LEVELS[S.level].cutoff;
   const hemo=hemoCutoffs(S.airway.age,S.level);
-  const HEMO_SUSTAIN_S=20; // PCR hemodinâmica exige o critério sustentado, não uma leitura isolada
-  const GRACE_S=20; // janela inicial sem checagem de PCR — tempo para o jogador ler o caso e pensar antes de qualquer critério começar a valer
+  const HEMO_SUSTAIN_S=90; // PCR hemodinâmica exige o critério sustentado, não uma leitura isolada
+  const GRACE_S=60; // janela inicial sem checagem de PCR — tempo para o jogador ler o caso e pensar antes de qualquer critério começar a valer
   const hemoApplies=!(S.case.pas===0&&S.case.hr===0); // Leito 10 já nasce com PAS/FC=0 por desenho — fórmula multiplicativa nunca sai de 0, então fica só no critério de SpO2
   if(hemoApplies&&S.gameTime>=GRACE_S){
     if(v.hr<=hemo.hr){if(S.hrCritSince==null)S.hrCritSince=S.gameTime;}else S.hrCritSince=null;
@@ -1056,7 +1137,7 @@ function tick(){
   if(S.gameTime>=GRACE_S&&v.spo2<=cutoff){S.pcrCause="SpO₂";finish("pcr");return}
   if(hemoApplies&&S.hrCritSince!=null&&S.gameTime-S.hrCritSince>=HEMO_SUSTAIN_S){S.pcrCause="bradicardia crítica sustentada";finish("pcr");return}
   if(hemoApplies&&S.pasCritSince!=null&&S.gameTime-S.pasCritSince>=HEMO_SUSTAIN_S){S.pcrCause="hipotensão crítica sustentada";finish("pcr");return}
-  if(S.gameTime>=120){finish("complete");return}
+  if(S.gameTime>=900){finish("complete");return}
   S.raf=requestAnimationFrame(tick);
 }
 function finish(reason){
@@ -1067,15 +1148,16 @@ function finish(reason){
   $("#monitorState").textContent=reason==="pcr"?"PCR":"ENCERRADO";
   $("#modalTitle").textContent=reason==="pcr"?"🚨 GAME OVER":"SIMULAÇÃO CONCLUÍDA";
   $("#modalTitle").className=reason==="pcr"?"red":"green";
-  $("#modalText").textContent=reason==="pcr"?`Paciente evoluiu para PCR — critério: ${S.pcrCause||"SpO₂"}.`:"O paciente não atingiu nenhum critério de PCR durante os 2 minutos.";
+  $("#modalText").textContent=reason==="pcr"?`Paciente evoluiu para PCR — critério: ${S.pcrCause||"SpO₂"}.`:"O paciente não atingiu nenhum critério de PCR durante os 15 minutos.";
   const scoreFinal=Math.round(S.score==null?100:S.score);
   const stabFinal=Math.round(S.stabilityScore==null?100:S.stabilityScore);
   const condFinal=Math.round(S.conductScore==null?100:S.conductScore);
   const data=[["Score final",`${scoreFinal}% — ${scoreLabel(scoreFinal)}`],["↳ Estabilidade hemodinâmica",`${stabFinal}%`],["↳ Condutas",`${condFinal}%`],["SpO₂ final",`${v.spo2.toFixed(0)}%`],["PA final",`${v.pas.toFixed(0)}/${v.pad.toFixed(0)}`],["PAM final",v.map.toFixed(0)],["FC final",v.hr.toFixed(0)],["FR final",v.rr.toFixed(0)],["Menor SpO₂",`${S.min.spo2.toFixed(0)}%`],["Menor PAS",S.min.pas.toFixed(0)],["Menor PAM",S.min.map.toFixed(0)],["Tempo",fmtTime(S.gameTime)],["Via aérea",S.oxygenationSecured?"Estabelecida":"Não estabelecida"]];
   $("#resultGrid").innerHTML=data.map(([a,b])=>`<div class="result"><span>${a}</span><b>${b}</b></div>`).join("");
   $("#debriefing").innerHTML=buildDebriefing();
-  $("#modalLog").innerHTML=`<h3>Intervenções</h3><div style="max-height:140px;overflow:auto">${S.events.map(e=>`<div class="event"><time>${fmtTime(e.time)}</time><span>${e.text}</span></div>`).join("")}</div>`;
+  $("#modalLog").innerHTML=`<h3>Linha do tempo completa</h3><div style="max-height:140px;overflow:auto">${S.events.map(e=>`<div class="event"><time>${fmtTime(e.time)}</time><span>${e.text}</span></div>`).join("")}</div>`;
   $("#toPhase3").classList.toggle("hidden", !(reason==="complete" && S.oxygenationSecured));
+  $("#toPhase4").classList.toggle("hidden", !(reason==="complete" && S.oxygenationSecured));
   $("#modal").classList.remove("hidden");
 }
 function startGame(){
@@ -1121,17 +1203,59 @@ function renderScoreBadge(sel){
 function renderVitals(v){
   $("#spo2").textContent=v.spo2.toFixed(0);$("#hr").textContent=v.hr.toFixed(0);$("#rr").textContent=v.rr.toFixed(0);$("#bp").textContent=`${v.pas.toFixed(0)}/${v.pad.toFixed(0)}`;$("#map").textContent=v.map.toFixed(0);
   $("#spo2").className="value "+(v.spo2<=LEVELS[S.level].cutoff+5?"red":"cyan");
+  const capnoWrap=$("#capnoWrap");
+  if(S.oxygenationSecured){$("#etco2").textContent="35";if(capnoWrap)capnoWrap.style.opacity="1";}
+  else{$("#etco2").textContent="--";if(capnoWrap)capnoWrap.style.opacity=".15";}
 }
 function drawWaves(){
   document.querySelectorAll("canvas.wave").forEach((c,idx)=>{
     const dpr=devicePixelRatio||1,rect=c.getBoundingClientRect();c.width=rect.width*dpr;c.height=rect.height*dpr;
     const x=c.getContext("2d");x.scale(dpr,dpr);x.clearRect(0,0,rect.width,rect.height);x.lineWidth=1.5;
-    const type=c.dataset.wave;x.strokeStyle=type==="spo2"?"#53d8ff":(type==="pa"||type==="pam"?"#ffe66d":"#52ff8f");x.beginPath();
+    const type=c.dataset.wave;
+    x.strokeStyle=type==="spo2"?"#53d8ff":type==="capno"?"#e8e8e8":type==="pa"?"#ff5252":type==="rr"?"#ffe66d":"#52ff8f";
+    x.beginPath();
     for(let px=0;px<rect.width;px++){
       const phase=(px/rect.width)*8*Math.PI;let y=rect.height/2;
-      if(type==="ecg"){const z=(px%85)/85;y=rect.height/2+(z<.12?-Math.sin(z/.12*Math.PI)*8:z<.18?Math.sin((z-.12)/.06*Math.PI)*26:z<.28?-Math.sin((z-.18)/.10*Math.PI)*10:0)}
-      else if(type==="spo2") y=rect.height/2-Math.sin(phase)*10-Math.max(0,Math.sin(phase))*5;
-      else if(type==="rr") y=rect.height/2-Math.sin(phase/2)*13;
+      if(type==="ecg"){
+        // Complexo P-QRS-T estilizado, mais próximo do traçado real de ECG.
+        const z=(px%100)/100;
+        if(z<.08) y=rect.height/2-Math.sin(z/.08*Math.PI)*5;
+        else if(z<.19) y=rect.height/2;
+        else if(z<.21) y=rect.height/2+((z-.19)/.02)*5;
+        else if(z<.235) y=rect.height/2+5-((z-.21)/.025)*35;
+        else if(z<.26) y=rect.height/2-30+((z-.235)/.025)*40;
+        else if(z<.29) y=rect.height/2+10-((z-.26)/.03)*10;
+        else if(z<.38) y=rect.height/2;
+        else if(z<.58) y=rect.height/2-Math.sin((z-.38)/.20*Math.PI)*9;
+        else y=rect.height/2;
+      }
+      else if(type==="spo2"){
+        // Pletismografia real: subida sistólica rápida, pico arredondado, incisura dicrótica, descida gradual.
+        const z=(px%60)/60;
+        if(z<.14) y=rect.height/2-(z/.14)*22;
+        else if(z<.22) y=rect.height/2-22+((z-.14)/.08)*7;
+        else if(z<.30) y=rect.height/2-15-((z-.22)/.08)*5;
+        else if(z<.60) y=rect.height/2-20+((z-.30)/.30)*20;
+        else y=rect.height/2;
+      }
+      else if(type==="pa"){
+        // Onda de pressão arterial: subida sistólica rápida, incisura dicrótica marcada, runoff diastólico.
+        const z=(px%55)/55;
+        if(z<.10) y=rect.height/2-(z/.10)*28;
+        else if(z<.16) y=rect.height/2-28+((z-.10)/.06)*10;
+        else if(z<.20) y=rect.height/2-18-((z-.16)/.04)*6;
+        else if(z<.55) y=rect.height/2-24+((z-.20)/.35)*24;
+        else y=rect.height/2;
+      }
+      else if(type==="rr") y=rect.height/2-(Math.sin(phase/2)*.5+.5)*20;
+      else if(type==="capno"){
+        // Capnografia real não é senoidal: platô alveolar após subida rápida, queda na inspiração.
+        const z=(px%70)/70;
+        if(z<.32) y=rect.height/2+22;
+        else if(z<.42) y=rect.height/2+22-((z-.32)/.10)*34;
+        else if(z<.82) y=rect.height/2-12-Math.sin((z-.42)/.40*Math.PI)*2.5;
+        else y=rect.height/2-12+((z-.82)/.18)*34;
+      }
       else y=rect.height/2-Math.sin(phase)*7;
       px?x.lineTo(px,y):x.moveTo(px,y)
     }x.stroke()
@@ -1214,7 +1338,7 @@ function ventTick(dt){
       v.yPress=v.yPmus+P.PEEP;
       const deltaFlux=v.yPmus/(R/60);
       v.yFlux=v.yFlux-deltaFlux;
-      const triggerMet=P.sensType==="pressao"?Math.abs(v.yPmus)>=P.sensValue:Math.abs(deltaFlux)>=P.sensValue;
+      const triggerMet=P.sensType==="pressao"?v.yPmus<=P.sensPressao:Math.abs(deltaFlux)>=P.sensFluxo;
       if(triggerMet){
         v.lastBreath=v.xVal;v.start=v.xVal;v.momento=1;v.VolTrans=0;
         if(v.mode==="VCV")v.yFlux=P.Fluxo; else v.yPress=P.PEEP;
@@ -1243,21 +1367,61 @@ function severinghaus(pao2){
 function hendersonHasselbalch(paco2,hco3){
   return 6.1+Math.log10(hco3/(0.03*paco2));
 }
+// HCO3 basal por caso (regra nova, não vem da planilha): reflete condição metabólica
+// prévia de cada quadro clínico — choque/hipoperfusão e insuficiência renal cursam
+// com acidose metabólica de base (lactato/ureia), mesmo antes de qualquer ventilação.
+const CASE_HCO3={leito01:24,leito02:24,leito03:24,leito04:19,leito05:24,leito06:24,leito07:17,leito08:15,leito09:20,leito10:16};
 function computeGasExchange(){
   const v=S.vent,preset=VENT_PRESETS[CASE_VENT_PRESET[S.case.id]-1],refW=S.case.weight||70;
   const connected=v.active&&!v.alarms.apneia;
   const fio2Frac=connected?v.params.FIO2/100:0.21;
   const peepDiff=Math.abs((connected?v.params.PEEP:0)-preset.idealPeep);
-  const peepFactor=connected?(1-Math.min(1,peepDiff/10)*0.6):0.5;
+  const peepFactor=connected?(1-Math.min(1,peepDiff/12)*0.55):0.5;
   const pf=preset.pf*peepFactor;
-  const pao2=clamp(pf*fio2Frac,30,600);
-  const targetVE=0.1*refW; // ~100 mL/kg/min de ventilação-minuto alvo
-  const actualVE=connected?Math.max(0.3,v.volmin):0.3;
-  const paco2=clamp(40*(targetVE/actualVE),15,120);
-  const hco3=24;
+  const pao2=clamp(pf*fio2Frac,35,550);
+  // PaCO2 a partir da ventilação ALVEOLAR (desconta espaço morto anatômico ~2,2 mL/kg
+  // por respiração), não da ventilação-minuto total — mais fiel à fisiologia real.
+  const vdPerBreath=0.0022*refW;
+  const freqRef=v.mode==="PSV"?(v.fpac||14):(v.params.Frequencia||14);
+  const veAtual=connected?Math.max(0.5,v.volmin):0.3;
+  const vaAtual=Math.max(0.4,veAtual-vdPerBreath*freqRef);
+  const veNormal=0.1*refW;
+  const vaNormal=Math.max(1,veNormal-vdPerBreath*14);
+  const paco2=clamp(40*(vaNormal/vaAtual),15,100);
+  const hco3=CASE_HCO3[S.case.id]!=null?CASE_HCO3[S.case.id]:24;
   const ph=hendersonHasselbalch(paco2,hco3);
   const spo2=severinghaus(pao2);
   return{pao2,paco2,ph,hco3,spo2};
+}
+// Diagnóstico ácido-base (regra nova): identifica o distúrbio primário pela direção
+// do pH e usa a fórmula de Winter (PaCO2 esperado = 1,5×HCO3 + 8 ±2) para checar se
+// a compensação respiratória de uma acidose metabólica é adequada ou se há um
+// componente respiratório sobreposto (distúrbio misto).
+function diagnoseABG(ph,paco2,hco3){
+  const phLow=ph<7.35,phHigh=ph>7.45;
+  const co2High=paco2>45,co2Low=paco2<35;
+  const hco3Low=hco3<22,hco3High=hco3>26;
+  const winterExp=1.5*hco3+8;
+  if(!phLow&&!phHigh){
+    if(co2High&&hco3High)return"Acidose respiratória cronicamente compensada";
+    if(co2Low&&hco3Low)return"Distúrbio misto compensando-se (avaliar contexto clínico)";
+    return"Equilíbrio ácido-base normal";
+  }
+  if(phLow){
+    if(hco3Low){
+      if(paco2>winterExp+2)return`Acidose metabólica + acidose respiratória sobreposta (PaCO2 acima do esperado pela fórmula de Winter, ~${winterExp.toFixed(0)})`;
+      if(paco2<winterExp-2)return`Acidose metabólica + alcalose respiratória sobreposta (compensação além do esperado, Winter ~${winterExp.toFixed(0)})`;
+      return"Acidose metabólica com compensação respiratória adequada (fórmula de Winter)";
+    }
+    if(co2High)return"Acidose respiratória";
+    return"Acidemia — padrão indeterminado, avaliar contexto clínico";
+  }
+  if(hco3High){
+    if(co2High)return"Alcalose metabólica + acidose respiratória sobreposta";
+    return"Alcalose metabólica";
+  }
+  if(co2Low)return"Alcalose respiratória";
+  return"Alcalemia — padrão indeterminado, avaliar contexto clínico";
 }
 
 // Regra nova (Fase 3): a SpO2 do monitor é derivada da PaO2 (Severinghaus) e da
@@ -1279,8 +1443,8 @@ function ventUpdateSpo2(dt){
   v.pad=clamp(v.pad+(padTarget-v.pad)*Math.min(1,0.5*dt),20,130);
 }
 
-function v3Log(text){S.vent.events.push({t:S.vent.elapsed,text});renderV3Log();}
-function renderV3Log(){$("#v3EventLog").innerHTML=S.vent.events.slice().reverse().map(e=>`<div class="event"><time>${fmtTime(e.t)}</time><span>${e.text}</span></div>`).join("");}
+function v3Log(text){S.events.push({time:(S.gameTime||0)+S.vent.elapsed,text:"[Ventilação mecânica] "+text});renderV3Log();}
+function renderV3Log(){$("#v3EventLog").innerHTML=S.events.slice().reverse().map(e=>`<div class="event"><time>${fmtTime(e.time)}</time><span>${e.text}</span></div>`).join("");}
 
 function renderVentAlarms(){
   const a=S.vent.alarms;
@@ -1293,9 +1457,20 @@ function renderV3Vitals(){
   $("#v3spo2").textContent=v.spo2.toFixed(0);
   $("#v3spo2").className="value "+(v.spo2<=LEVELS[S.level].cutoff+5?"red":"cyan");
   $("#v3bp").textContent=`${v.pas.toFixed(0)}/${v.pad.toFixed(0)}`;
+  renderGasoLive();
   $("#v3vol").textContent=v.VolTrans.toFixed(0)+" mL";
   $("#v3flux").textContent=v.yFlux.toFixed(0)+" L/min";
   $("#v3press").textContent=v.yPress.toFixed(1)+" cmH₂O";
+  const connected=v.active&&!v.alarms.apneia;
+  const v3CapnoWrap=$("#v3CapnoWrap");
+  if(connected){
+    const gas=computeGasExchange();
+    $("#v3etco2").textContent=Math.max(10,gas.paco2-4).toFixed(0); // EtCO2 ~ PaCO2 - gradiente de espaço morto alveolar
+    if(v3CapnoWrap)v3CapnoWrap.style.opacity="1";
+  } else {
+    $("#v3etco2").textContent="--";
+    if(v3CapnoWrap)v3CapnoWrap.style.opacity=".15";
+  }
   renderV3Readouts();renderMechPanel();
 }
 // "mostradores()" do SAVeM: Ti, Te, Ppico, VCe, relação I:E — por modo.
@@ -1325,13 +1500,17 @@ function renderMechPanel(){
   const resistCalc=inspFlowLs>0?((v.yPress-v.plato)/inspFlowLs).toFixed(1):"—";
   $("#v3Mech").innerHTML=`<span class="chip">Cstat ≈ ${cstat} mL/cmH₂O</span><span class="chip">Cdyn ≈ ${cdyn} mL/cmH₂O</span><span class="chip">Resistência ≈ ${resistCalc} cmH₂O·s/L</span><span class="chip">Driving pressure ${drivingP.toFixed(1)} cmH₂O</span>`;
 }
-function drawGaso(){
+function renderGasoLive(){
   const gas=computeGasExchange();
   const phLabel=gas.ph<7.35?"acidose":gas.ph>7.45?"alcalose":"normal";
   const co2Label=gas.paco2>45?"retenção de CO₂":gas.paco2<35?"hiperventilação":"normal";
   const o2Label=gas.pao2<60?"hipoxemia":"normal";
-  $("#v3Gaso").innerHTML=`<span class="chip">pH ${gas.ph.toFixed(2)} (${phLabel})</span><span class="chip">PaO₂ ${gas.pao2.toFixed(0)} mmHg (${o2Label})</span><span class="chip">PaCO₂ ${gas.paco2.toFixed(0)} mmHg (${co2Label})</span><span class="chip">HCO₃⁻ ${gas.hco3} mEq/L</span><span class="chip">SpO₂ calc. ${gas.spo2.toFixed(0)}%</span>`;
-  v3Log(`Gasometria colhida: pH ${gas.ph.toFixed(2)}, PaO₂ ${gas.pao2.toFixed(0)}, PaCO₂ ${gas.paco2.toFixed(0)}.`);
+  $("#v3Gaso").innerHTML=`<span class="chip">pH ${gas.ph.toFixed(2)} (${phLabel})</span><span class="chip">PaO₂ ${gas.pao2.toFixed(0)} mmHg (${o2Label})</span><span class="chip">PaCO₂ ${gas.paco2.toFixed(0)} mmHg (${co2Label})</span><span class="chip">HCO₃⁻ ${gas.hco3} mEq/L</span>`;
+  const dx=diagnoseABG(gas.ph,gas.paco2,gas.hco3);
+  const dxEl=$("#v3GasoDx");
+  dxEl.textContent=`Diagnóstico: ${dx}`;
+  dxEl.className="gaso-dx "+(dx==="Equilíbrio ácido-base normal"?"normal":"abn");
+  return gas;
 }
 function drawVentWaves(){
   const map={vol:["#53d8ff",-50,900],flux:["#ffe66d",-80,80],press:["#52ff8f",-2,40]};
@@ -1362,7 +1541,7 @@ function startPhase3(){
     params:{Volume:startVolume,Frequencia:14,Fluxo:40,flowForm:1,pausaInsp:0,
       Pressao:15,tInsp:1,tSubidaP:0.1,
       PS:10,tSubida:0.1,
-      PEEP:preset.idealPeep,FIO2:60,sensType:"pressao",sensValue:2},
+      PEEP:preset.idealPeep,FIO2:60,sensType:"pressao",sensPressao:-2,sensFluxo:2},
     momento:0,start:0,xVal:0,lastBreath:0,maxFluxo:0,peakThisBreath:0,hrCritSince:null,pasCritSince:null,
     momentoPac:0,startPac:0,lastPac:0,yPmus:0,
     yVol:0,yFlux:0,yPress:preset.idealPeep,VolTrans:0,VolMax:0,plato:0,volmin:0,
@@ -1371,15 +1550,15 @@ function startPhase3(){
     spo2:seed.spo2,hr:seed.hr,pas:seed.pas,pad:seed.pad,
     baseHr:seed.hr,basePas:seed.pas,basePad:seed.pad,
     alarms:{vc:false,pplato:false,paw:false,apneia:false},
-    events:[{t:0,text:"Via aérea estabelecida — configure o ventilador."}],
+    events:[],
     elapsed:0
   };
+  S.events.push({time:S.gameTime||0,text:"[Ventilação mecânica] Via aérea estabelecida — configure o ventilador."});
   $("#game").style.display="none";$("#modal").classList.add("hidden");
   $("#phase3").style.display="block";
   $("#v3Case").textContent=S.case.name;$("#v3Desc").textContent=S.case.description;
   $("#v3Meta").textContent=`${LEVELS[S.level].name} • cutoff PCR: SpO₂ ≤ ${LEVELS[S.level].cutoff}%`;
   $("#v3PatientInfo").innerHTML=`<span class="chip">Peso ${refW} kg</span><span class="chip">Esforço espontâneo: ${preset.pmus>0?"presente":"ausente/sedado"}</span>`;
-  $("#v3Gaso").innerHTML=`<span class="chip">Ainda não colhida</span>`;
   $("#v3Mode").value="VCV";$("#v3ParamsVCV").style.display="block";$("#v3ParamsPCV").style.display="none";$("#v3ParamsPSV").style.display="none";
   syncVentInputs();
   $("#v3PlayPause").textContent="▶ INICIAR VENTILAÇÃO";$("#v3State").textContent="CONFIGURANDO";
@@ -1393,8 +1572,7 @@ function syncVentInputs(){
   $("#v3Pressao").value=p.Pressao;$("#v3FrequenciaP").value=p.Frequencia;$("#v3tInsp").value=p.tInsp;$("#v3tSubidaP").value=p.tSubidaP;
   $("#v3PS").value=p.PS;$("#v3tSubida").value=p.tSubida;
   $("#v3PEEP").value=p.PEEP;$("#v3FIO2").value=p.FIO2;
-  $("#v3SensType").value=p.sensType;$("#v3SensValue").value=p.sensValue;
-  document.querySelectorAll('#phase3 [data-out]').forEach(el=>{const src=$("#"+el.dataset.out);if(src)el.textContent=src.value;});
+  $("#v3SensType").value=p.sensType;$("#v3SensPressao").value=p.sensPressao;$("#v3SensFluxo").value=p.sensFluxo;
 }
 function applyVentParam(id,val){
   const p=S.vent.params;
@@ -1409,7 +1587,8 @@ function applyVentParam(id,val){
   else if(id==="v3tSubida")p.tSubida=val;
   else if(id==="v3PEEP")p.PEEP=val;
   else if(id==="v3FIO2")p.FIO2=val;
-  else if(id==="v3SensValue")p.sensValue=val;
+  else if(id==="v3SensPressao")p.sensPressao=val;
+  else if(id==="v3SensFluxo")p.sensFluxo=val;
 }
 var v3Last=0;
 function v3Loop(ts){
@@ -1441,8 +1620,8 @@ function v3Loop(ts){
   $("#v3Timer").textContent=fmtTime(v.elapsed);
   const cutoff=LEVELS[S.level].cutoff;
   const hemo=hemoCutoffs(S.airway.age,S.level);
-  const HEMO_SUSTAIN_S=20;
-  const V3_GRACE_S=10; // tempo para configurar o ventilador antes do critério hemodinâmico começar a valer
+  const HEMO_SUSTAIN_S=90;
+  const V3_GRACE_S=30; // tempo para configurar o ventilador antes do critério hemodinâmico começar a valer
   const hemoApplies=!(S.case.pas===0&&S.case.hr===0);
   if(hemoApplies&&v.elapsed>=V3_GRACE_S){
     if(v.hr<=hemo.hr){if(v.hrCritSince==null)v.hrCritSince=v.elapsed;}else v.hrCritSince=null;
@@ -1467,12 +1646,187 @@ function v3Finish(reason){
   const data=[["Score final",`${scoreFinal}% — ${scoreLabel(scoreFinal)}`],["↳ Estabilidade hemodinâmica",`${stabFinal}%`],["↳ Condutas",`${condFinal}%`],["SpO₂ final",`${v.spo2.toFixed(0)}%`],["PA final",`${v.pas.toFixed(0)}/${v.pad.toFixed(0)}`],["FC final",v.hr.toFixed(0)],["Modo",v.mode],["Tempo em Fase 3",fmtTime(v.elapsed)]];
   $("#resultGrid").innerHTML=data.map(([a,b])=>`<div class="result"><span>${a}</span><b>${b}</b></div>`).join("");
   $("#debriefing").innerHTML=buildDebriefing();
-  $("#modalLog").innerHTML=`<h3>Fase 3 — Intervenções</h3><div style="max-height:140px;overflow:auto">${v.events.map(e=>`<div class="event"><time>${fmtTime(e.t)}</time><span>${e.text}</span></div>`).join("")}</div>`;
+  $("#modalLog").innerHTML=`<h3>Linha do tempo completa (Fases 1–3)</h3><div style="max-height:140px;overflow:auto">${S.events.map(e=>`<div class="event"><time>${fmtTime(e.time)}</time><span>${e.text}</span></div>`).join("")}</div>`;
   $("#toPhase3").classList.add("hidden");
   $("#phase3").style.display="none";
   $("#modal").classList.remove("hidden");
 }
 
+/* =========================================================================
+   FASE 4 — SEDAÇÃO, ANALGESIA E BLOQUEIO CONTÍNUOS
+   Concentrações de ampola, diluições sugeridas e doses-alvo definidas pelo
+   usuário (não vêm da planilha nem do SAVeM). O aluno escolhe a droga de cada
+   categoria (nenhuma obrigatória) e calcula a vazão de infusão (mL/h).
+   ========================================================================= */
+// Coeficientes hemodinâmicos de referência (pa/hr/rr) — reaproveitam os mesmos
+// valores já usados para as doses em bolus equivalentes nas Fases 1/2 (regra nova
+// desta fase: o efeito escala linearmente com a razão dose-obtida/dose-alvo,
+// já que não foi definida uma curva dose-resposta própria).
+const CONT_ANALGESICS=[
+  {id:"fent_diluido",name:"Fentanil (diluído)",ampConc:50,ampUnit:"mcg/mL",dilution:"20 mL de fentanil + 80 mL SF 0,9% (100 mL)",finalConc:10,finalUnit:"mcg/mL",dose:2,doseUnit:"mcg/kg/h",pa:-.08,hr:-.2,rr:-.2},
+  {id:"fent_puro",name:"Fentanil (puro)",ampConc:50,ampUnit:"mcg/mL",dilution:"sem diluição — solução pura da ampola",finalConc:50,finalUnit:"mcg/mL",dose:2,doseUnit:"mcg/kg/h",pa:-.08,hr:-.2,rr:-.2},
+  {id:"keta_analg",name:"Cetamina",ampConc:50,ampUnit:"mg/mL",dilution:"10 mL de cetamina + 90 mL SF 0,9% (100 mL)",finalConc:5,finalUnit:"mg/mL",dose:0.2,doseUnit:"mg/kg/h",pa:.025,hr:.03,rr:0}
+];
+const CONT_SEDATIVES=[
+  {id:"keta_sed",name:"Cetamina",ampConc:50,ampUnit:"mg/mL",dilution:"10 mL de cetamina + 90 mL SF 0,9% (100 mL)",finalConc:5,finalUnit:"mg/mL",dose:0.2,doseUnit:"mg/kg/h",pa:.025,hr:.03,rr:0},
+  {id:"midaz_cont",name:"Midazolam",ampConc:5,ampUnit:"mg/mL",dilution:"20 mL de midazolam + 80 mL SF 0,9% (100 mL)",finalConc:1,finalUnit:"mg/mL",dose:0.2,doseUnit:"mg/kg/h",pa:-.05,hr:-.05,rr:-.1},
+  {id:"propofol_cont",name:"Propofol",ampConc:10,ampUnit:"mg/mL",dilution:"puro — 10 mg/mL, sem diluição",finalConc:10,finalUnit:"mg/mL",dose:2,doseUnit:"mg/kg/h",pa:-.15,hr:0,rr:-.2},
+  {id:"dex_cont",name:"Dexmedetomidina",ampConc:100,ampUnit:"mcg/mL",dilution:"4 mL de dexmedetomidina + 96 mL SF 0,9% (100 mL)",finalConc:4,finalUnit:"mcg/mL",dose:0.7,doseUnit:"mcg/kg/h",pa:-.2,hr:-.2,rr:-.1}
+];
+const CONT_BNM=[
+  {id:"rocuronio_cont",name:"Rocurônio",ampConc:10,ampUnit:"mg/mL",dilution:"50 mL de rocurônio + 50 mL SF 0,9% (100 mL)",finalConc:5,finalUnit:"mg/mL",dose:0.76,doseUnit:"mg/kg/h",pa:0,hr:0,rr:0,paralisa:true},
+  {id:"cisatracurio_cont",name:"Cisatracúrio",ampConc:2,ampUnit:"mg/mL",dilution:"50 mL de cisatracúrio + 50 mL SF 0,9% (100 mL)",finalConc:1,finalUnit:"mg/mL",dose:0.15,doseUnit:"mg/kg/h",pa:0,hr:0,rr:0,paralisa:true}
+];
+function startPhase4(){
+  const refW=S.case.weight||70;
+  const seed=S.lastVitals||{spo2:96,hr:90,pas:110,pad:70,map:83,rr:16};
+  S.cont={weight:refW,selected:{analgesia:null,sedacao:null,bnm:null},infusions:{},events:[],
+    elapsed:0,seed:{spo2:seed.spo2,hr:seed.hr,pas:seed.pas,pad:seed.pad,rr:seed.rr||16},lastTickTime:0};
+  $("#modal").classList.add("hidden");
+  $("#game").style.display="none";$("#phase3").style.display="none";
+  $("#phase4").style.display="block";
+  $("#v4Case").textContent=S.case.name;$("#v4Desc").textContent=S.case.description;
+  $("#v4Meta").textContent=`${LEVELS[S.level].name} • cutoff PCR: SpO₂ ≤ ${LEVELS[S.level].cutoff}%`;
+  $("#v4PatientInfo").innerHTML=`<span class="chip">Peso ${refW} kg</span>`;
+  S.events.push({time:S.gameTime||0,text:"[Sedação contínua] Fase 4 iniciada — escolha as drogas e vazões de infusão contínua (nenhuma obrigatória)."});
+  renderContCategory("analgesia",CONT_ANALGESICS,"analgesiaOptions","analgesiaDetail");
+  renderContCategory("sedacao",CONT_SEDATIVES,"sedacaoOptions","sedacaoDetail");
+  renderContCategory("bnm",CONT_BNM,"bnmOptions","bnmDetail");
+  renderV4Log();
+  drawWaves();
+  v4Last=0;requestAnimationFrame(v4Loop);
+}
+function renderContCategory(cat,drugs,optionsId,detailId){
+  const host=$("#"+optionsId);
+  const sel=S.cont.selected[cat];
+  host.innerHTML=`<button class="cont-opt none ${sel===null?"active":""}" data-cat="${cat}" data-drug="">Nenhuma</button>`+
+    drugs.map(d=>`<button class="cont-opt ${sel===d.id?"active":""}" data-cat="${cat}" data-drug="${d.id}">${d.name}</button>`).join("");
+  host.querySelectorAll("button").forEach(b=>b.onclick=()=>selectContDrug(cat,b.dataset.drug||null,drugs,optionsId,detailId));
+  renderContDetail(cat,drugs,detailId);
+}
+function selectContDrug(cat,drugId,drugs,optionsId,detailId){
+  S.cont.selected[cat]=drugId;
+  delete S.cont.infusions[cat];
+  const label=drugId?drugs.find(d=>d.id===drugId).name:"Nenhuma";
+  S.events.push({time:(S.gameTime||0)+S.cont.elapsed,text:`[Sedação contínua] ${catLabel(cat)}: ${label}`});
+  renderV4Log();
+  renderContCategory(cat,drugs,optionsId,detailId);
+}
+function catLabel(cat){return cat==="analgesia"?"Analgesia contínua":cat==="sedacao"?"Sedação contínua":"Bloqueio neuromuscular contínuo";}
+function renderContDetail(cat,drugs,detailId){
+  const host=$("#"+detailId);
+  const drugId=S.cont.selected[cat];
+  if(!drugId){host.classList.add("hidden");host.innerHTML="";return;}
+  const d=drugs.find(x=>x.id===drugId);
+  host.classList.remove("hidden");
+  host.innerHTML=`
+    <div class="row"><span>Concentração da ampola</span><b>${d.ampConc} ${d.ampUnit}</b></div>
+    <div class="row"><span>Diluição sugerida</span><b>${d.dilution}</b></div>
+    <div class="row"><span>Concentração final</span><b>${d.finalConc} ${d.finalUnit}</b></div>
+    <div style="margin-top:8px">
+      <label style="font-size:12px;color:var(--muted)">Vazão da bomba (mL/h)</label><br>
+      <input type="number" step="0.1" min="0" id="contInput_${cat}" value="0">
+    </div>
+    <div class="row" style="margin-top:8px"><span>Dose obtida</span><b class="cont-dose-live" id="contDoseLive_${cat}">0 ${d.doseUnit}</b></div>`;
+  $("#contInput_"+cat).oninput=(e)=>updateContInfusion(cat,d,Number(e.target.value)||0);
+  updateContInfusion(cat,d,0);
+}
+function updateContInfusion(cat,d,rate){
+  const dose=(rate*d.finalConc)/S.cont.weight; // dose obtida (mg ou mcg /kg/h) a partir da vazão escolhida
+  const ratio=Math.min(2,dose/d.dose); // escala do efeito hemodinâmico (referência interna, não exibida ao jogador)
+  const wasActive=S.cont.infusions[cat]&&S.cont.infusions[cat].rate>0;
+  S.cont.infusions[cat]={drugId:d.id,rate,dose,ratio,pa:d.pa*ratio,hr:d.hr*ratio,rr:d.rr*ratio,paralisa:!!d.paralisa&&rate>0};
+  const el=$("#contDoseLive_"+cat);
+  if(el)el.textContent=`${dose.toFixed(2)} ${d.doseUnit}`;
+  if(!wasActive&&rate>0)evaluateContConduct(d);
+}
+// Gabarito de condutas da Fase 4 (regra nova, definida pelo usuário): avalia o
+// estado hemodinâmico do paciente no momento em que a infusão é iniciada.
+function evaluateContConduct(d){
+  const v=S.lastVitals||{};
+  const age=S.airway?S.airway.age:30;
+  const[hlo]=hrNormalRange(age);
+  const[plo]=pasNormalRange(age);
+  const hipotenso=v.pas!=null&&v.pas<plo;
+  const bradicardico=v.hr!=null&&v.hr<hlo;
+  const flag="cont_"+d.id;
+  if((d.id==="fent_diluido"||d.id==="fent_puro")&&hipotenso){
+    procedurePenalty(flag,8,"Fentanil contínuo iniciado em paciente hipotenso — considere cetamina como analgésico nesse cenário.");
+  } else if(d.id==="propofol_cont"&&hipotenso){
+    procedurePenalty(flag,8,"Propofol contínuo iniciado em paciente hipotenso — risco de agravar a hipotensão.");
+  } else if((d.id==="keta_analg"||d.id==="keta_sed")&&hipotenso){
+    procedureBonus(flag,8,"Cetamina é uma escolha adequada de analgesia/sedação contínua em paciente hipotenso.");
+  } else if(d.id==="dex_cont"&&(hipotenso||bradicardico)){
+    procedurePenalty(flag,8,"Dexmedetomidina contínua pode agravar a hipotensão/bradicardia já presente neste paciente.");
+  }
+}
+function renderV4Log(){$("#v4EventLog").innerHTML=S.events.slice().reverse().map(e=>`<div class="event"><time>${fmtTime(e.time)}</time><span>${e.text}</span></div>`).join("");}
+var v4Last=0;
+function v4Loop(ts){
+  if(!S.cont)return;
+  if(!v4Last)v4Last=ts;
+  const dt=Math.min(0.25,(ts-v4Last)/1000);v4Last=ts;
+  S.cont.elapsed+=dt;
+  const v=calculateContVitals(S.cont.elapsed);
+  S.lastVitals=v;updateStats(v);
+  $("#v4hr").textContent=v.hr.toFixed(0);
+  $("#v4spo2").textContent=v.spo2.toFixed(0);
+  $("#v4bp").textContent=`${v.pas.toFixed(0)}/${v.pad.toFixed(0)}`;
+  $("#v4map").textContent=v.map.toFixed(0);
+  $("#v4rr").textContent=v.rr.toFixed(0);
+  $("#v4etco2").textContent="35";
+  $("#v4Timer").textContent=fmtTime(S.cont.elapsed);
+  const cutoff=LEVELS[S.level].cutoff;
+  const hemo=hemoCutoffs(S.airway.age,S.level);
+  updateWarningBanner("#v4Warning",v,cutoff,hemo,true);
+  const scoreDt=S.cont.elapsed-(S.cont.lastTickTime||0);S.cont.lastTickTime=S.cont.elapsed;
+  updateScore(scoreDt,v,S.airway.age);
+  renderScoreBadge("#v4ScoreBadge");
+  drawWaves();
+  if(v.spo2<=cutoff){S.pcrCause="SpO₂";v4Finish("pcr");return;}
+  if(S.cont.hrCritSince==null&&v.hr<=hemo.hr)S.cont.hrCritSince=S.cont.elapsed;
+  if(v.hr>hemo.hr)S.cont.hrCritSince=null;
+  if(S.cont.pasCritSince==null&&v.pas<=hemo.pas)S.cont.pasCritSince=S.cont.elapsed;
+  if(v.pas>hemo.pas)S.cont.pasCritSince=null;
+  if(S.cont.hrCritSince!=null&&S.cont.elapsed-S.cont.hrCritSince>=90){S.pcrCause="bradicardia crítica sustentada";v4Finish("pcr");return;}
+  if(S.cont.pasCritSince!=null&&S.cont.elapsed-S.cont.pasCritSince>=90){S.pcrCause="hipotensão crítica sustentada";v4Finish("pcr");return;}
+  requestAnimationFrame(v4Loop);
+}
+// Física da Fase 4 (regra nova): parte dos valores no fim da Fase 2, sem decaimento
+// por instabilidade prévia (o quadro agudo já foi manejado) — só os efeitos das
+// infusões contínuas em curso, proporcionais à dose obtida.
+function calculateContVitals(t){
+  const seed=S.cont.seed;
+  let fpa=0,fhr=0,frr=0,paralisa=false;
+  Object.values(S.cont.infusions).forEach(inf=>{fpa+=inf.pa;fhr+=inf.hr;frr+=inf.rr;if(inf.paralisa)paralisa=true;});
+  const pas=clamp(seed.pas*(1+fpa),0,260);
+  const pad=clamp(seed.pad*(1+fpa),0,200);
+  const pam=pad+(pas-pad)/3;
+  const hr=clamp(seed.hr*(1+fhr),0,250);
+  const rr=paralisa?0:clamp(seed.rr*(1+frr),0,60);
+  return{spo2:clamp(seed.spo2,0,100),pas,pad,map:pam,hr,rr};
+}
+function v4Finish(reason){
+  $("#phase4").style.display="none";
+  $("#monitorState").textContent=reason==="pcr"?"PCR":"ENCERRADO";
+  $("#modalTitle").textContent=reason==="pcr"?"🚨 GAME OVER":"FASE 4 CONCLUÍDA";
+  $("#modalTitle").className=reason==="pcr"?"red":"green";
+  $("#modalText").textContent=reason==="pcr"?`Paciente evoluiu para PCR durante a sedação contínua — critério: ${S.pcrCause||"SpO₂"}.`:"Sedação, analgesia e bloqueio contínuos configurados.";
+  const stab=Math.round(S.stabilityScore==null?100:S.stabilityScore);
+  const cond=Math.round(S.conductScore==null?100:S.conductScore);
+  const score=Math.round(S.score==null?100:S.score);
+  const v=S.lastVitals;
+  const data=[["Score final",`${score}% — ${scoreLabel(score)}`],["↳ Estabilidade hemodinâmica",`${stab}%`],["↳ Condutas",`${cond}%`],
+    ["SpO₂ final",`${v.spo2.toFixed(0)}%`],["PA final",`${v.pas.toFixed(0)}/${v.pad.toFixed(0)}`],["FC final",v.hr.toFixed(0)],
+    ["Analgesia",S.cont.selected.analgesia?CONT_ANALGESICS.find(d=>d.id===S.cont.selected.analgesia).name:"Nenhuma"],
+    ["Sedação",S.cont.selected.sedacao?CONT_SEDATIVES.find(d=>d.id===S.cont.selected.sedacao).name:"Nenhuma"],
+    ["Bloqueio",S.cont.selected.bnm?CONT_BNM.find(d=>d.id===S.cont.selected.bnm).name:"Nenhum"]];
+  $("#resultGrid").innerHTML=data.map(([a,b])=>`<div class="result"><span>${a}</span><b>${b}</b></div>`).join("");
+  $("#debriefing").innerHTML=buildDebriefing();
+  $("#modalLog").innerHTML=`<h3>Linha do tempo completa (Fases 1–4)</h3><div style="max-height:140px;overflow:auto">${S.events.map(e=>`<div class="event"><time>${fmtTime(e.time)}</time><span>${e.text}</span></div>`).join("")}</div>`;
+  $("#toPhase3").classList.add("hidden");$("#toPhase4").classList.add("hidden");
+  $("#modal").classList.remove("hidden");
+}
 function init(){
   $("#level").innerHTML=Object.entries(LEVELS).map(([k,v])=>`<option value="${k}">${v.name} — PCR em SpO₂ ≤ ${v.cutoff}%</option>`).join("");
   $("#caseSelect").innerHTML=CASES.map(c=>`<option value="${c.id}">${c.name}</option>`).join("");
@@ -1481,6 +1835,8 @@ function init(){
   $("#howtoClose").onclick=()=>$("#howtoModal").classList.add("hidden");
   $("#howtoModal").addEventListener("click",e=>{if(e.target.id==="howtoModal")$("#howtoModal").classList.add("hidden")});
   $("#toPhase3").onclick=startPhase3;
+  $("#toPhase4").onclick=startPhase4;
+  $("#v4Quit").onclick=()=>v4Finish("manual");
   $("#genReport").onclick=generateReport;
   $("#v3Quit").onclick=()=>v3Finish("manual");
   $("#v3Mode").onchange=(e)=>{
@@ -1491,10 +1847,27 @@ function init(){
     S.vent.momento=0;S.vent.maxFluxo=0;
   };
   $("#v3FlowForm").onchange=(e)=>{if(!S.vent)return;S.vent.params.flowForm=Number(e.target.value);};
-  $("#v3SensType").onchange=(e)=>{if(!S.vent)return;S.vent.params.sensType=e.target.value;};
-  $("#v3DrawABG").onclick=()=>{if(!S.vent)return;drawGaso();};
-  ["v3Volume","v3Frequencia","v3Fluxo","v3PausaInsp","v3Pressao","v3FrequenciaP","v3tInsp","v3tSubidaP","v3PS","v3tSubida","v3PEEP","v3FIO2","v3SensValue"].forEach(id=>{
-    $("#"+id).oninput=(e)=>{if(!S.vent)return;document.querySelector(`[data-out="${id}"]`).textContent=e.target.value;applyVentParam(id,Number(e.target.value));};
+  $("#v3SensType").onchange=(e)=>{
+    if(!S.vent)return;S.vent.params.sensType=e.target.value;
+    $("#v3SensPressaoWrap").style.display=e.target.value==="pressao"?"block":"none";
+    $("#v3SensFluxoWrap").style.display=e.target.value==="fluxo"?"block":"none";
+  };
+  ["v3Volume","v3Frequencia","v3Fluxo","v3PausaInsp","v3Pressao","v3FrequenciaP","v3tInsp","v3tSubidaP","v3PS","v3tSubida","v3PEEP","v3FIO2","v3SensPressao","v3SensFluxo"].forEach(id=>{
+    $("#"+id).onchange=(e)=>{
+      if(!S.vent)return;
+      const el=e.target;
+      const clamped=clamp(Number(el.value)||0,Number(el.min),Number(el.max));
+      el.value=clamped;applyVentParam(id,clamped);
+    };
+  });
+  document.querySelectorAll(".vp-btn").forEach(b=>{
+    b.onclick=()=>{
+      if(!S.vent)return;
+      const el=$("#"+b.dataset.target);
+      const delta=Number(b.dataset.delta);
+      const next=clamp(Math.round((Number(el.value)+delta)*100)/100,Number(el.min),Number(el.max));
+      el.value=next;applyVentParam(b.dataset.target,next);
+    };
   });
   $("#v3PlayPause").onclick=()=>{
     if(!S.vent)return;
